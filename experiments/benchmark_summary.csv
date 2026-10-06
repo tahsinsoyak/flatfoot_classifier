@@ -1,0 +1,4 @@
+model,accuracy,sensitivity,specificity,precision,npv,f1_score,roc_auc,test_loss
+resnet50,0.8435,0.9489,0.6882,0.8176,0.9014,0.8784,0.9134,0.6363
+efficientnet_b2,0.8609,0.9124,0.7849,0.8621,0.8588,0.8865,0.9222,0.5091
+convnext_tiny,0.8435,0.9416,0.6989,0.8217,0.8904,0.8776,0.9152,0.8875

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+.venv/
+venv/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Data & Models
+data/raw/
+data/processed/
+experiments/checkpoints/
+experiments/runs/
+*.pt
+*.pth
+*.onnx
+
+# OS & IDE
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
