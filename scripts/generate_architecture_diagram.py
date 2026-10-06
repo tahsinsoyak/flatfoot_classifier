@@ -1,4 +1,8 @@
-"""Generate publication-grade vector SVG architecture diagrams (English & Turkish) for the Flatfoot Classification Pipeline."""
+"""Generate publication-grade visual SVG architecture diagrams (English & Turkish)
+for the Flatfoot Deep Learning Classification Pipeline.
+Designed with minimal text, 3D isometric neural tensor representations,
+and clear scientific iconography.
+"""
 
 from pathlib import Path
 
@@ -8,498 +12,553 @@ def create_architecture_svg(output_path: Path | str, lang: str = "en") -> str:
 
     # Localized texts
     if is_tr:
-        title = "AĞIRLIK AKTARMALI YAN AYAK GRAFİLERİNDEN DÜZ TABAN SINIFLANDIRMA PİPELİNE MİMARİSİ"
-        subtitle = "Otomatik Tıbbi Ön İşleme • Kanonik Yön Hizalama • Derin Özellik Çıkarımı • Grad-CAM Klinik Açıklanabilirlik"
-        
-        st1_title = "AŞAMA 1: GRAFİ ALIMI & ÖN İŞLEME"
-        st1_c1_title = "1.1 Klinik Yan Röntgen (16-bit)"
-        st1_c1_p1 = "• 1.529 Ağırlık Aktarmalı Yan Ayak Grafisi"
-        st1_c1_p2 = "• Yüksek dinamik aralık (0 – 65.535 uint16)"
-        st1_c1_p3 = "• Değişken çözünürlük (~3000 × 2400 px)"
-        st1_c1_p4 = "• Çift taraflı kohort (Sol ve Sağ ayaklar)"
+        title = "UÇTAN UCA DÜZ TABAN DERİN ÖĞRENME SINIFLANDIRMA VE AÇIKLANABİLİRLİK MİMARİSİ"
+        subtitle = "Girdi Ön İşleme • 3D Konvolüsyonel Özellik Omurgası • İkili Teşhis Kararı • Grad-CAM Klinik Doğrulama"
 
-        st1_c2_title = "1.2 Dinamik Yüzdelik Pencereleme"
-        st1_c2_p1 = "• Yoğunluk kırpma: P₁ ve P₉₉ yüzdelikleri"
-        st1_c2_p2 = "• Siyah kenarlık & aşırı ışın parlamalarını giderir"
-        st1_c2_p3 = "✓ Normalize Edilmiş 8-bit Gri Düzey (0–255)"
+        sec_a_title = "A. GİRDİ VE MEKÂNSAL STANDARDIZASYON"
+        step1_title = "1. Ham Yan Grafi (16-bit)"
+        step1_sub = "1.529 Vaka (0–65.535 uint16)"
+        step1_tag = "Değişken yön & metal basamak"
 
-        st1_c3_title = "1.3 CLAHE Kontrast İyileştirme"
-        st1_c3_p1 = "• Kırpma sınırı = 2.0 (gürültü bastırma)"
-        st1_c3_p2 = "• Izgara boyutu = 8 × 8 bağlamsal alt bölge"
-        st1_c3_sub = "Belirginleşen Anatomik Yapılar:"
-        st1_c3_a1 = "• Kalkaneus trabeküler kemik deseni"
-        st1_c3_a2 = "• Talonaviküler eklem açıklığı"
-        st1_c3_a3 = "• 1. Metatars-kuneiform dizilimi"
-        st1_c3_badge = "İyileştirilmiş Mikro-Mimari"
+        step2_title = "2. Dinamik Pencereleme & CLAHE"
+        step2_sub = "P₁–P₉₉ normalizasyonu + 8-bit"
+        step2_tag = "Belirgin trabeküler kemik deseni"
 
-        st2_title = "AŞAMA 2: MEKÂNSAL STANDARDIZASYON"
-        st2_c1_title = "2.1 Tibia Ekseni Yön Tespiti"
-        st2_c1_p1 = "• Üst %35–50 aralığında dikey kaval kemiği analizi"
-        st2_c1_flip1 = "• X_tibia > W/2 (Sol ayak) → Yatay Aynalama"
-        st2_c1_flip2 = "• X_tibia ≤ W/2 (Sağ ayak) → Koruma"
-        st2_c1_badge = "✓ %100 Sağa Bakan Kanonik Ayak Arkı"
+        step3_title = "3. Kaval Kemiği ile Sağ Yönelim"
+        step3_sub = "X_tibia > W/2 → Sağa çevir"
+        step3_tag = "%100 Sağa bakan kanonik ark"
 
-        st2_c2_title = "2.2 Basamak Tespiti & ROI Kırpma"
-        st2_c2_p1 = "• Yatay Sobel (Ky) zemin ayrımı:"
-        st2_c2_sub = "Sistematik Artefakt Temizliği:"
-        st2_c2_a1 = "✖ Alt kısımdaki metal basamak & aparatlar"
-        st2_c2_a2 = "✖ Üst bacak kemikleri & 'L'/'R' harf etiketleri"
-        st2_c2_badge = "✓ İzole Edilmiş Anatomik Ayak Kompleksi"
+        step4_title = "4. Basamak Tespiti & ROI Kırpma"
+        step4_sub = "Sobel-Y basamak tespiti"
+        step4_tag = "Standart [3 × 512 × 512] Tensör"
 
-        st2_c3_title = "2.3 Kanonik 512×512 Yeniden Boyutlandırma"
-        st2_c3_p1 = "• Yüksek doğruluklu çift doğrusal enterpolasyon"
-        st2_c3_p2 = "• Trabeküler kemik frekanslarını korur"
-        st2_c3_p3 = "• Standart girdi tensörü: [3 × 512 × 512]"
-        st2_c3_badge = "Homojen Model Girdi Uzayı"
+        foot_frame_title = "Kanonik 512 × 512 Ayak Matrisi"
+        foot_frame_sub = "Metal aksam & harf etiketleri temizlendi"
 
-        st3_title = "AŞAMA 3: DERİN ÖZELLİK OMURGASI"
-        st3_c1_title = "3.1 Karşılaştırılan Omurga Modelleri"
-        st3_c1_m1 = "EfficientNet-B2 (En Yüksek Genel Başarım)"
-        st3_c1_m1_sub = "• Bileşik ölçekleme • Squeeze-and-Excitation • 9.2M param"
-        st3_c1_m2 = "ResNet-50 (En Yüksek Duyarlılık)"
-        st3_c1_m2_sub = "• Rezidüel artık bloklar • 25.6M param"
-        st3_c1_m3 = "ConvNeXt-Tiny (Modern Konvolüsyonel Ağ)"
-        st3_c1_m3_sub = "• 7×7 derinlik konvolüsyonu • Ters darboğaz • 28.6M"
-        st3_c1_custom = "+ Özgün FootArchNet Mimari Tabanı"
+        sec_b_title = "B. DERİN KONVOLÜSYONEL ÖZELLİK OMURGASI (CNN)"
+        lbl_input = "Girdi"
+        lbl_stem = "Kök (Stem)"
+        lbl_stg1 = "Aşama 1"
+        lbl_stg2 = "Aşama 2"
+        lbl_stg3 = "Aşama 3"
+        lbl_penult = "Sondan Önceki Katman (A^k)"
+        lbl_gap = "GAP"
+        lbl_fc = "Sınıflandırma Başlığı"
+        lbl_res = "+ Artık Bağlantı"
+        lbl_hook = "Grad-CAM Kancası"
 
-        st3_c2_title = "3.2 Eğitim ve Optimizasyon Düzeni"
-        st3_c2_p1 = "• Donanım: NVIDIA RTX 3050 Ti (4GB VRAM)"
-        st3_c2_p2 = "• AMP: Otomatik Karışık Hassasiyet (FP16)"
-        st3_c2_p3 = "• Optimize Edici: AdamW (LR=1e-4, Decay=1e-2)"
-        st3_c2_p4 = "• Takvim: Kosinüs Tavlama (20 Epok)"
-        st3_c2_p5 = "• Yığın boyutu: 8 (Kararlı 1.900 MB VRAM profili)"
-        st3_c2_badge = "Sıfır Veri Sızıntılı Tabakalı Bölümleme"
+        hier_title = "Aşamalı Hiyerarşik Özellik Çıkarımı:"
+        h_stg1_t = "Aşama 1: Doku"
+        h_stg1_s = "Trabekül & korteks"
+        h_stg2_t = "Aşama 2: Eklem"
+        h_stg2_s = "Talonaviküler hat"
+        h_stg3_t = "Aşama 3: Kalkaneus"
+        h_stg3_s = "Pitch eğim açısı"
+        h_stg4_t = "Aşama 4: Ark Çökmesi"
+        h_stg4_s = "Genel MLA morfolojisi"
 
-        st4_title = "AŞAMA 4: TANI VE AÇIKLANABİLİRLİK (XAI)"
-        st4_c1_title = "4.1 Klinik Test Değerlendirmesi (n=230)"
-        st4_c1_top = "Lider Model: EfficientNet-B2"
-        st4_c1_acc = "• Doğruluk (Accuracy):"
-        st4_c1_auc = "• ROC-AUC Skoru:"
-        st4_c1_sens = "• Duyarlılık (Recall):"
-        st4_c1_sens_sub = "(ResNet: %94.89)"
-        st4_c1_spec = "• Özgüllük (Specificity):"
-        st4_c1_f1 = "• F1-Skor:"
-        st4_c1_note = "• 137 düz taban vakasından sadece 7–8'i kaçırıldı"
-        st4_c1_badge = "✓ Mükemmel Birinci Basamak Tarama Gücü"
+        models_badge = "Değerlendirilen Omurgalar: EfficientNet-B2 (%86.09 Doğruluk) • ResNet-50 (%94.89 Duyarlılık) • ConvNeXt-Tiny"
+        models_sub = "• Bileşik MBConv Ölçekleme (EfficientNet) • Rezidüel Artık Bloklar (ResNet) • 7×7 Derinlik Konvolüsyonu"
+        future_badge = "Gelecek Hedefi: Özgün FootArchNet Çift Kollu Dikkat (Attention) Mimarisi"
 
-        st4_c2_title = "4.2 Grad-CAM Görsel Açıklanabilirlik"
-        st4_c2_p1 = "• Sınıf ayırt edici gradyan haritalandırması:"
-        st4_c2_sub = "Fizyolojik Olarak Doğrulanmış Odak Noktaları:"
-        st4_c2_a1 = "🔴 Medial Longitudinal Ark Çökmesi"
-        st4_c2_a2 = "🟡 Naviküler-Kuneiform Düşüşü"
-        st4_c2_a3 = "🟢 Kalkaneal Eğim (Pitch) Açılanması"
-        st4_c2_sc1 = "Sıfır Kestirme Öğrenme (No Shortcut)"
-        st4_c2_sc2 = "Metal basamak, metin etiketleri ve boşluğu yok sayar"
+        sec_c_title = "C. KLİNİK TANI VE GRAD-CAM AÇIKLANABİLİRLİK"
+        diag_title = "Teşhis Karar Çıktısı"
+        c_flat = "Düz Taban (Pes Planus)"
+        c_flat_sub = "P(y=1) ≥ 0.50 Eşik"
+        c_norm = "Normal Ayak"
+        c_norm_sub = "P(y=1) < 0.50 Normal"
+
+        test_cohort = "Bağımsız Klinik Test Kümesi (n=230)"
+        sens_lbl = "• Duyarlılık (Sensitivity):"
+        auc_lbl = "• ROC-AUC Skoru:"
+        acc_lbl = "• Genel Doğruluk (Accuracy):"
+
+        grad_flow_lbl = "Geriye Gradyan Akışı (∂y^c / ∂A^k)"
+        xai_title = "Grad-CAM Açıklanabilirlik Motoru"
+        saliency_low = "Düşük İlgi (0.0)"
+        saliency_high = "Zirve Odak (1.0)"
+
+        roi_1_t = "1. Medial Longitudinal Ark Çökmesi"
+        roi_1_s = "Birincil basış kavisinin çöküş odağı"
+        roi_2_t = "2. Naviküler-Kuneiform Düşüşü"
+        roi_2_s = "Meary açısı sapma ve eklem çökme hattı"
+        roi_3_t = "3. Kalkaneal Eğim (Pitch) Açılanması"
+        roi_3_s = "Kalkaneus alt taban eğim açısı doğrulaması"
+
+        val_title = "Fizyolojik AI Doğrulaması"
+        val_sub = "✓ Sıfır Kestirme Öğrenme: Metal basamak ve harfleri yok sayar"
+        val_note = "Ortopedik Klinik Belirteçlerle %100 Biyolojik Uyum"
     else:
-        title = "END-TO-END DEEP LEARNING FRAMEWORK FOR RADIOGRAPHIC PES PLANUS CLASSIFICATION"
-        subtitle = "Automated Medical Preprocessing • Canonical Alignment • Deep Feature Extraction • Grad-CAM Clinical Interpretability"
+        title = "END-TO-END DEEP LEARNING FRAMEWORK FOR RADIOGRAPHIC FLATFOOT CLASSIFICATION"
+        subtitle = "Standardized Preprocessing • Deep Multi-Scale CNN Backbone • Dual Diagnostic Head • Grad-CAM XAI Validation"
 
-        st1_title = "STAGE 1: RADIOGRAPH INGESTION"
-        st1_c1_title = "1.1 Clinical Lateral X-Ray (16-bit)"
-        st1_c1_p1 = "• 1,529 Weight-Bearing Radiographs"
-        st1_c1_p2 = "• High-dynamic range (0 – 65,535 uint16)"
-        st1_c1_p3 = "• Variable resolution (~3000 × 2400 px)"
-        st1_c1_p4 = "• Bilateral cohort (both Left & Right feet)"
+        sec_a_title = "A. INPUT & SPATIAL STANDARDIZATION"
+        step1_title = "1. Raw Lateral X-Ray (16-bit)"
+        step1_sub = "1,529 Clinical Cases (0–65,535 uint16)"
+        step1_tag = "Variable laterality & metal stand"
 
-        st1_c2_title = "1.2 Dynamic Percentile Windowing"
-        st1_c2_p1 = "• Intensity clipping between P₁ & P₉₉"
-        st1_c2_p2 = "• Removes black border / bright beam spikes"
-        st1_c2_p3 = "✓ Normalized 8-bit Grayscale (0–255)"
+        step2_title = "2. Dynamic Windowing & CLAHE"
+        step2_sub = "P₁–P₉₉ normalization + 8-bit"
+        step2_tag = "Sharpened trabeculae & contours"
 
-        st1_c3_title = "1.3 CLAHE Contrast Enhancement"
-        st1_c3_p1 = "• Clip limit = 2.0 (suppresses noise)"
-        st1_c3_p2 = "• Tile grid = 8 × 8 contextual sub-regions"
-        st1_c3_sub = "Sharpened Anatomical Details:"
-        st1_c3_a1 = "• Calcaneal trabeculae & cortex"
-        st1_c3_a2 = "• Talonavicular joint margin"
-        st1_c3_a3 = "• 1st Metatarsal-cuneiform alignment"
-        st1_c3_badge = "Enhanced Micro-Architecture"
+        step3_title = "3. Tibial-Axis Canonical Flip"
+        step3_sub = "X_tibia > W/2 → Mirror right"
+        step3_tag = "100% Right-facing canonical arch"
 
-        st2_title = "STAGE 2: SPATIAL STANDARDIZATION"
-        st2_c1_title = "2.1 Tibial-Axis Laterality Detection"
-        st2_c1_p1 = "• Analyzes vertical shaft in upper 35–50%"
-        st2_c1_flip1 = "• If X_tibia > W/2 (Left foot) → Horizontal Flip"
-        st2_c1_flip2 = "• If X_tibia ≤ W/2 (Right foot) → Preserve"
-        st2_c1_badge = "✓ 100% Right-Facing Canonical Arch"
+        step4_title = "4. Platform Edge & ROI Crop"
+        step4_sub = "Sobel-Y platform interface"
+        step4_tag = "Standardized [3 × 512 × 512] Tensor"
 
-        st2_c2_title = "2.2 Platform Edge & ROI Cropping"
-        st2_c2_p1 = "• Horizontal Sobel filter (Ky) detects ground:"
-        st2_c2_sub = "Systematic Artifact Elimination:"
-        st2_c2_a1 = "✖ Metal table base & floor bars below"
-        st2_c2_a2 = "✖ Upper tibia shaft above & 'L'/'R' tags"
-        st2_c2_badge = "✓ Isolated Anatomical Foot Complex"
+        foot_frame_title = "Canonical 512 × 512 Foot Frame"
+        foot_frame_sub = "Extraneous apparatus & letter markers removed"
 
-        st2_c3_title = "2.3 Canonical 512×512 Resizing"
-        st2_c3_p1 = "• High-fidelity bilinear interpolation"
-        st2_c3_p2 = "• Preserves trabecular bone frequencies"
-        st2_c3_p3 = "• Standardized tensor: [3 × 512 × 512]"
-        st2_c3_badge = "Uniform Model Input Space"
+        sec_b_title = "B. DEEP CONVOLUTIONAL FEATURE BACKBONE (CNN)"
+        lbl_input = "Input"
+        lbl_stem = "Stem"
+        lbl_stg1 = "Stage 1"
+        lbl_stg2 = "Stage 2"
+        lbl_stg3 = "Stage 3"
+        lbl_penult = "Penultimate Layer (A^k)"
+        lbl_gap = "GAP"
+        lbl_fc = "Classification Head"
+        lbl_res = "+ Residual Skip"
+        lbl_hook = "Grad-CAM Hook"
 
-        st3_title = "STAGE 3: DEEP FEATURE BACKBONE"
-        st3_c1_title = "3.1 Benchmarked Backbone Networks"
-        st3_c1_m1 = "EfficientNet-B2 (Top Overall)"
-        st3_c1_m1_sub = "• Compound scaling • Squeeze-and-Excitation • 9.2M params"
-        st3_c1_m2 = "ResNet-50 (Top Sensitivity)"
-        st3_c1_m2_sub = "• Bottleneck Residual Blocks • 25.6M params"
-        st3_c1_m3 = "ConvNeXt-Tiny (Modern ConvNet)"
-        st3_c1_m3_sub = "• 7×7 Depthwise Convolutions • Inverted Bottleneck • 28.6M"
-        st3_c1_custom = "+ Custom FootArchNet Architecture Base"
+        hier_title = "Hierarchical Morphological Feature Extraction:"
+        h_stg1_t = "Stage 1: Textures"
+        h_stg1_s = "Trabeculae & cortex"
+        h_stg2_t = "Stage 2: Joints"
+        h_stg2_s = "Talonavicular margin"
+        h_stg3_t = "Stage 3: Calcaneus"
+        h_stg3_s = "Pitch angle slope"
+        h_stg4_t = "Stage 4: Arch Sag"
+        h_stg4_s = "Global MLA collapse"
 
-        st3_c2_title = "3.2 Training & Optimization Scheme"
-        st3_c2_p1 = "• Hardware: NVIDIA RTX 3050 Ti (4GB VRAM)"
-        st3_c2_p2 = "• AMP: Automatic Mixed Precision (FP16)"
-        st3_c2_p3 = "• Optimizer: AdamW (LR=1e-4, Decay=1e-2)"
-        st3_c2_p4 = "• Schedule: Cosine Annealing (20 Epochs)"
-        st3_c2_p5 = "• Batch size: 8 (Stable 1,900 MB VRAM profile)"
-        st3_c2_badge = "Zero Data Leakage Stratified Split"
+        models_badge = "Evaluated Backbones: EfficientNet-B2 (86.09% Acc) • ResNet-50 (94.89% Sens) • ConvNeXt-Tiny"
+        models_sub = "• Compound MBConv Scaling (EfficientNet) • Bottleneck Residuals (ResNet) • 7×7 Depthwise Conv (ConvNeXt)"
+        future_badge = "Future Foundation: Custom FootArchNet Dual-Branch Attention Architecture"
 
-        st4_title = "STAGE 4: DIAGNOSIS & XAI"
-        st4_c1_title = "4.1 Clinical Test Evaluation (n=230)"
-        st4_c1_top = "Top Benchmark: EfficientNet-B2"
-        st4_c1_acc = "• Accuracy:"
-        st4_c1_auc = "• ROC-AUC:"
-        st4_c1_sens = "• Sensitivity:"
-        st4_c1_sens_sub = "(ResNet: 94.89%)"
-        st4_c1_spec = "• Specificity:"
-        st4_c1_f1 = "• F1-Score:"
-        st4_c1_note = "• Missing only 7–8 out of 137 flatfoot cases"
-        st4_c1_badge = "✓ Excellent First-Line Diagnostic Screen"
+        sec_c_title = "C. DIAGNOSTIC OUTPUT & GRAD-CAM XAI"
+        diag_title = "Diagnostic Decision Head"
+        c_flat = "Pes Planus (Flatfoot)"
+        c_flat_sub = "P(y=1) ≥ 0.50 Threshold"
+        c_norm = "Normal Foot"
+        c_norm_sub = "P(y=1) < 0.50 Normal"
 
-        st4_c2_title = "4.2 Grad-CAM Visual Explainability"
-        st4_c2_p1 = "• Class-discriminative gradient mapping:"
-        st4_c2_sub = "Physiologically Validated Saliency:"
-        st4_c2_a1 = "🔴 Medial Longitudinal Arch Collapse"
-        st4_c2_a2 = "🟡 Navicular-Cuneiform Plantar Drop"
-        st4_c2_a3 = "🟢 Calcaneal Pitch Angle Inclination"
-        st4_c2_sc1 = "Zero Shortcut Learning"
-        st4_c2_sc2 = "Ignores text tags, borders, and metal stands"
+        test_cohort = "Independent Clinical Test Cohort (n=230)"
+        sens_lbl = "• Sensitivity (Recall):"
+        auc_lbl = "• ROC-AUC Score:"
+        acc_lbl = "• Diagnostic Accuracy:"
 
+        grad_flow_lbl = "Backward Gradient Flow (∂y^c / ∂A^k)"
+        xai_title = "Grad-CAM Explainability Engine"
+        saliency_low = "Low Saliency (0.0)"
+        saliency_high = "Peak Focus (1.0)"
+
+        roi_1_t = "1. Medial Longitudinal Arch Collapse"
+        roi_1_s = "Primary weight-bearing arch sag confirmation"
+        roi_2_t = "2. Navicular-Cuneiform Plantar Sag"
+        roi_2_s = "Meary's talar-first metatarsal deviation locus"
+        roi_3_t = "3. Calcaneal Pitch Inclination Angle"
+        roi_3_s = "Inferior calcaneal ground plane slope check"
+
+        val_title = "Physiological AI Validation"
+        val_sub = "✓ Zero Shortcut Learning: Ignores metal stands & text tags"
+        val_note = "100% Biological Concordance with Orthopaedic Criteria"
+
+    sens_val = "%94.89" if is_tr else "94.89%"
     acc_val = "%86.09" if is_tr else "86.09%"
-    sens_val = "%91.24" if is_tr else "91.24%"
-    spec_val = "%78.49" if is_tr else "78.49%"
 
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" width="100%" height="100%" style="background:#ffffff; font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1340 640" width="100%" height="100%" style="background:#ffffff; font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;">
   <defs>
     <!-- Gradients -->
-    <linearGradient id="gradHeader" x1="0%" y1="0%" x2="100%" y2="0%">
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#0f172a" />
-      <stop offset="100%" stop-color="#1e3a8a" />
-    </linearGradient>
-    <linearGradient id="gradStage1" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#f0f9ff" />
-      <stop offset="100%" stop-color="#e0f2fe" />
-    </linearGradient>
-    <linearGradient id="gradStage2" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#f5f3ff" />
-      <stop offset="100%" stop-color="#ede9fe" />
-    </linearGradient>
-    <linearGradient id="gradStage3" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ecfdf5" />
-      <stop offset="100%" stop-color="#d1fae5" />
-    </linearGradient>
-    <linearGradient id="gradStage4" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#fffbeb" />
-      <stop offset="100%" stop-color="#fef3c7" />
+      <stop offset="60%" stop-color="#1e3a8a" />
+      <stop offset="100%" stop-color="#0369a1" />
     </linearGradient>
 
-    <!-- Drop Shadows -->
-    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+    <linearGradient id="secAGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#f1f5f9" />
+    </linearGradient>
+
+    <linearGradient id="secBGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f0fdf4" />
+      <stop offset="100%" stop-color="#e6fcf5" />
+    </linearGradient>
+
+    <linearGradient id="secCGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fefce8" />
+      <stop offset="100%" stop-color="#fef9c3" />
+    </linearGradient>
+
+    <!-- 3D Tensor Slab Gradients -->
+    <linearGradient id="slabInput" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <linearGradient id="slabStem" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+    <linearGradient id="slabStg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#4f46e5" />
+    </linearGradient>
+    <linearGradient id="slabStg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+    <linearGradient id="slabStg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" />
+      <stop offset="100%" stop-color="#9333ea" />
+    </linearGradient>
+    <linearGradient id="slabPenult" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+
+    <!-- Heatmap Gradient -->
+    <linearGradient id="heatGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="35%" stop-color="#06b6d4" />
+      <stop offset="70%" stop-color="#eab308" />
+      <stop offset="100%" stop-color="#ef4444" />
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
       <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.08" />
     </filter>
-    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.06" />
+    <filter id="tensorShadow" x="-15%" y="-10%" width="130%" height="125%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.15" />
     </filter>
 
-    <!-- Arrow Markers -->
-    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <!-- Markers -->
+    <marker id="arrBlue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path d="M 0 1 L 10 5 L 0 9 z" fill="#0284c7" />
     </marker>
-    <marker id="arrowPurple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#6d28d9" />
-    </marker>
-    <marker id="arrowGreen" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <marker id="arrGreen" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669" />
     </marker>
-    <marker id="arrowAmber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706" />
+    <marker id="arrRed" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626" />
+    </marker>
+    <marker id="arrPurple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#7c3aed" />
     </marker>
   </defs>
 
-  <!-- Title & Banner -->
-  <rect x="25" y="18" width="1150" height="56" rx="8" fill="url(#gradHeader)" filter="url(#shadow)" />
-  <text x="600" y="44" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" letter-spacing="0.4">
+  <!-- ================= TOP HEADER BANNER ================= -->
+  <rect x="20" y="14" width="1300" height="52" rx="8" fill="url(#headerGrad)" filter="url(#shadow)" />
+  <text x="670" y="38" fill="#ffffff" font-size="15.5" font-weight="700" text-anchor="middle" letter-spacing="0.4">
     {title}
   </text>
-  <text x="600" y="63" fill="#93c5fd" font-size="11.5" text-anchor="middle">
+  <text x="670" y="55" fill="#93c5fd" font-size="11" text-anchor="middle">
     {subtitle}
   </text>
 
-  <!-- ================= STAGE 1: INGESTION & WINDOWING ================= -->
-  <g transform="translate(25, 92)">
-    <rect x="0" y="0" width="265" height="560" rx="10" fill="url(#gradStage1)" stroke="#bae6fd" stroke-width="1.5" filter="url(#shadow)" />
+  <!-- ================= SECTION A: PREPROCESSING (Left) ================= -->
+  <g transform="translate(20, 78)">
+    <rect x="0" y="0" width="345" height="544" rx="8" fill="url(#secAGrad)" stroke="#cbd5e1" stroke-width="1.2" filter="url(#shadow)" />
     
-    <!-- Stage Header -->
-    <rect x="12" y="12" width="241" height="34" rx="6" fill="#0284c7" />
-    <text x="132" y="34" fill="#ffffff" font-size="11.5" font-weight="700" text-anchor="middle">
-      {st1_title}
-    </text>
+    <!-- Section Title -->
+    <rect x="10" y="10" width="325" height="28" rx="5" fill="#0284c7" />
+    <text x="172" y="28" fill="#ffffff" font-size="11.5" font-weight="700" text-anchor="middle">{sec_a_title}</text>
 
-    <!-- Card 1: Raw DICOM -->
-    <g transform="translate(14, 58)">
-      <rect x="0" y="0" width="237" height="105" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#cardShadow)" />
-      <text x="12" y="22" fill="#0369a1" font-size="11" font-weight="700">{st1_c1_title}</text>
-      <text x="12" y="42" fill="#475569" font-size="9.5">{st1_c1_p1}</text>
-      <text x="12" y="58" fill="#475569" font-size="9.5">{st1_c1_p2}</text>
-      <text x="12" y="74" fill="#475569" font-size="9.5">{st1_c1_p3}</text>
-      <text x="12" y="90" fill="#64748b" font-size="9" font-style="italic">{st1_c1_p4}</text>
+    <!-- Step 1: Raw Radiograph -->
+    <g transform="translate(12, 48)">
+      <rect x="0" y="0" width="321" height="74" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="1" />
+      <!-- Mini X-ray icon -->
+      <rect x="10" y="10" width="46" height="54" rx="4" fill="#0f172a" />
+      <path d="M 16 52 Q 28 30 38 46 T 50 38" stroke="#38bdf8" stroke-width="2" fill="none" />
+      <text x="48" y="22" fill="#ef4444" font-size="9" font-weight="bold">"L"</text>
+      <line x1="12" y1="58" x2="54" y2="58" stroke="#94a3b8" stroke-width="3" /> <!-- Table line -->
+
+      <text x="66" y="26" fill="#0f172a" font-size="10.5" font-weight="700">{step1_title}</text>
+      <text x="66" y="42" fill="#475569" font-size="9">{step1_sub}</text>
+      <text x="66" y="56" fill="#64748b" font-size="8.5" font-style="italic">{step1_tag}</text>
     </g>
 
-    <!-- Down Arrow 1 -->
-    <path d="M 132 170 L 132 185" stroke="#0284c7" stroke-width="2" marker-end="url(#arrow)" />
+    <!-- Arrow Down 1 -->
+    <path d="M 172 125 L 172 138" stroke="#0284c7" stroke-width="2" marker-end="url(#arrBlue)" />
 
-    <!-- Card 2: Dynamic Windowing -->
-    <g transform="translate(14, 192)">
-      <rect x="0" y="0" width="237" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#cardShadow)" />
-      <text x="12" y="22" fill="#0369a1" font-size="11" font-weight="700">{st1_c2_title}</text>
-      <text x="12" y="40" fill="#475569" font-size="9.5">{st1_c2_p1}</text>
+    <!-- Step 2: Dynamic Windowing & CLAHE -->
+    <g transform="translate(12, 142)">
+      <rect x="0" y="0" width="321" height="74" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="1" />
+      <!-- Histogram / CLAHE icon -->
+      <rect x="10" y="10" width="46" height="54" rx="4" fill="#f8fafc" stroke="#cbd5e1" />
+      <path d="M 14 54 Q 24 16 34 38 T 52 54" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5" />
       
-      <!-- Formula Box -->
-      <rect x="10" y="50" width="217" height="48" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="118" y="70" fill="#0f172a" font-size="10.5" font-family="'Times New Roman', serif" font-style="italic" text-anchor="middle">
-        I<tspan font-size="8" dy="2">8-bit</tspan><tspan dy="-2"> = clip( (I</tspan><tspan font-size="8" dy="2">16-bit</tspan><tspan dy="-2"> - P₁) / ΔP , 0, 1) × 255</tspan>
-      </text>
-      <text x="118" y="88" fill="#64748b" font-size="8.5" text-anchor="middle">
-        ΔP = P₉₉ - P₁ + 10⁻⁶
-      </text>
-
-      <text x="12" y="116" fill="#475569" font-size="9.5">{st1_c2_p2}</text>
-      <text x="12" y="132" fill="#059669" font-size="9.5" font-weight="600">{st1_c2_p3}</text>
+      <text x="66" y="26" fill="#0f172a" font-size="10.5" font-weight="700">{step2_title}</text>
+      <text x="66" y="42" fill="#475569" font-size="9">{step2_sub}</text>
+      <text x="66" y="56" fill="#0369a1" font-size="8.5" font-weight="600">{step2_tag}</text>
     </g>
 
-    <!-- Down Arrow 2 -->
-    <path d="M 132 349 L 132 364" stroke="#0284c7" stroke-width="2" marker-end="url(#arrow)" />
+    <!-- Arrow Down 2 -->
+    <path d="M 172 219 L 172 232" stroke="#0284c7" stroke-width="2" marker-end="url(#arrBlue)" />
 
-    <!-- Card 3: CLAHE Contrast -->
-    <g transform="translate(14, 371)">
-      <rect x="0" y="0" width="237" height="168" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#cardShadow)" />
-      <text x="12" y="22" fill="#0369a1" font-size="11" font-weight="700">{st1_c3_title}</text>
-      <text x="12" y="42" fill="#475569" font-size="9.5">{st1_c3_p1}</text>
-      <text x="12" y="58" fill="#475569" font-size="9.5">{st1_c3_p2}</text>
-      <text x="12" y="76" fill="#0369a1" font-size="9.5" font-weight="600">{st1_c3_sub}</text>
-      <text x="20" y="94" fill="#475569" font-size="9">{st1_c3_a1}</text>
-      <text x="20" y="110" fill="#475569" font-size="9">{st1_c3_a2}</text>
-      <text x="20" y="126" fill="#475569" font-size="9">{st1_c3_a3}</text>
-      <rect x="12" y="138" width="213" height="20" rx="3" fill="#e0f2fe" />
-      <text x="118" y="152" fill="#0284c7" font-size="9" font-weight="700" text-anchor="middle">{st1_c3_badge}</text>
+    <!-- Step 3: Tibial Axis Canonical Flip -->
+    <g transform="translate(12, 236)">
+      <rect x="0" y="0" width="321" height="74" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="1" />
+      <!-- Flip icon -->
+      <rect x="10" y="10" width="46" height="54" rx="4" fill="#f8fafc" stroke="#cbd5e1" />
+      <line x1="28" y1="14" x2="28" y2="44" stroke="#7c3aed" stroke-width="3" stroke-dasharray="2,2" />
+      <path d="M 16 48 L 40 48 M 34 44 L 40 48 L 34 52" stroke="#7c3aed" stroke-width="1.8" fill="none" />
+
+      <text x="66" y="26" fill="#0f172a" font-size="10.5" font-weight="700">{step3_title}</text>
+      <text x="66" y="42" fill="#475569" font-size="9">{step3_sub}</text>
+      <text x="66" y="56" fill="#7c3aed" font-size="8.5" font-weight="600">{step3_tag}</text>
+    </g>
+
+    <!-- Arrow Down 3 -->
+    <path d="M 172 313 L 172 326" stroke="#0284c7" stroke-width="2" marker-end="url(#arrBlue)" />
+
+    <!-- Step 4: Platform Sobel & ROI -->
+    <g transform="translate(12, 330)">
+      <rect x="0" y="0" width="321" height="80" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="1" />
+      <!-- Bounding Box icon -->
+      <rect x="10" y="10" width="46" height="58" rx="4" fill="#f8fafc" stroke="#cbd5e1" />
+      <rect x="15" y="16" width="36" height="34" rx="2" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3,2" />
+      <line x1="12" y1="54" x2="54" y2="54" stroke="#dc2626" stroke-width="2" /> <!-- Ground cut -->
+
+      <text x="66" y="26" fill="#0f172a" font-size="10.5" font-weight="700">{step4_title}</text>
+      <text x="66" y="42" fill="#475569" font-size="9">{step4_sub}</text>
+      <text x="66" y="56" fill="#059669" font-size="8.5" font-weight="bold">{step4_tag}</text>
+    </g>
+
+    <!-- Bottom summary badge with Foot silhouette -->
+    <g transform="translate(12, 422)">
+      <rect x="0" y="0" width="321" height="106" rx="6" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1.2" />
+      <text x="160" y="24" fill="#0369a1" font-size="10" font-weight="700" text-anchor="middle">{foot_frame_title}</text>
+      
+      <!-- Crisp Foot Silhouette -->
+      <path d="M 40 76 Q 65 48 95 60 Q 130 76 175 52 Q 215 36 250 68 Q 275 80 285 80 L 35 80 Z" fill="#bae6fd" stroke="#0284c7" stroke-width="2" />
+      <circle cx="175" cy="54" r="3.5" fill="#ef4444" /> <!-- Navicular locus -->
+      <line x1="45" y1="76" x2="110" y2="76" stroke="#0369a1" stroke-width="2" stroke-dasharray="2,2" /> <!-- Calcaneal pitch line -->
+
+      <text x="160" y="96" fill="#0c4a6e" font-size="8.5" font-weight="600" text-anchor="middle">{foot_frame_sub}</text>
     </g>
   </g>
 
-  <!-- Arrow: Stage 1 -> Stage 2 -->
-  <path d="M 290 372 L 315 372" stroke="#0284c7" stroke-width="2.5" marker-end="url(#arrow)" />
+  <!-- Flow Arrow: Section A -> Section B -->
+  <path d="M 368 350 L 392 350" stroke="#0284c7" stroke-width="3" marker-end="url(#arrBlue)" />
 
-  <!-- ================= STAGE 2: CANONICAL STANDARDIZATION ================= -->
-  <g transform="translate(320, 92)">
-    <rect x="0" y="0" width="265" height="560" rx="10" fill="url(#gradStage2)" stroke="#ddd6fe" stroke-width="1.5" filter="url(#shadow)" />
+  <!-- ================= SECTION B: DEEP NEURAL NETWORK (Center) ================= -->
+  <g transform="translate(395, 78)">
+    <rect x="0" y="0" width="550" height="544" rx="8" fill="url(#secBGrad)" stroke="#a7f3d0" stroke-width="1.2" filter="url(#shadow)" />
     
-    <!-- Stage Header -->
-    <rect x="12" y="12" width="241" height="34" rx="6" fill="#6d28d9" />
-    <text x="132" y="34" fill="#ffffff" font-size="11.5" font-weight="700" text-anchor="middle">
-      {st2_title}
-    </text>
+    <!-- Section Title -->
+    <rect x="10" y="10" width="530" height="28" rx="5" fill="#059669" />
+    <text x="275" y="28" fill="#ffffff" font-size="11.5" font-weight="700" text-anchor="middle">{sec_b_title}</text>
 
-    <!-- Card 1: Tibial Shaft Axis -->
-    <g transform="translate(14, 58)">
-      <rect x="0" y="0" width="237" height="152" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#cardShadow)" />
-      <text x="12" y="22" fill="#5b21b6" font-size="11" font-weight="700">{st2_c1_title}</text>
-      <text x="12" y="40" fill="#475569" font-size="9.5">{st2_c1_p1}</text>
+    <!-- SUB-AREA: 3D Isometric Tensor Feature Hierarchy -->
+    <g transform="translate(20, 52)">
+      <!-- Input Tensor [512x512x3] -->
+      <g transform="translate(0, 40)" filter="url(#tensorShadow)">
+        <polygon points="0,0 20,-16 20,184 0,200" fill="#0284c7" />
+        <polygon points="0,0 20,-16 32,-16 12,0" fill="#38bdf8" />
+        <polygon points="12,0 32,-16 32,184 12,200" fill="#0369a1" />
+        <text x="16" y="220" fill="#0f172a" font-size="9" font-weight="700" text-anchor="middle">{lbl_input}</text>
+        <text x="16" y="233" fill="#64748b" font-size="8" text-anchor="middle">512×512</text>
+      </g>
 
-      <!-- Density formula -->
-      <rect x="10" y="48" width="217" height="48" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="118" y="68" fill="#0f172a" font-size="10.5" font-family="'Times New Roman', serif" font-style="italic" text-anchor="middle">
-        ρ<tspan font-size="8" dy="2">vert</tspan><tspan dy="-2">(x) = </tspan><tspan font-size="13">∑</tspan><tspan font-size="8" dy="3">y=0.35H..0.50H</tspan><tspan font-size="10.5" dy="-3"> I(x, y)</tspan>
-      </text>
-      <text x="118" y="87" fill="#64748b" font-size="8.5" text-anchor="middle">
-        X<tspan font-size="7">tibia</tspan> = argmax (ρ<tspan font-size="7">vert</tspan> * G<tspan font-size="7">σ=15</tspan>)
-      </text>
+      <!-- Arrow 1 -->
+      <path d="M 40 140 L 60 140" stroke="#059669" stroke-width="2" marker-end="url(#arrGreen)" />
 
-      <text x="12" y="114" fill="#475569" font-size="9.5">{st2_c1_flip1}</text>
-      <text x="12" y="130" fill="#475569" font-size="9.5">{st2_c1_flip2}</text>
-      <text x="12" y="145" fill="#5b21b6" font-size="9" font-weight="700">{st2_c1_badge}</text>
+      <!-- Stem Block [256x256x32] -->
+      <g transform="translate(64, 58)" filter="url(#tensorShadow)">
+        <polygon points="0,0 18,-14 18,146 0,160" fill="url(#slabStem)" />
+        <polygon points="0,0 18,-14 36,-14 18,0" fill="#93c5fd" />
+        <polygon points="18,0 36,-14 36,146 18,160" fill="#1d4ed8" />
+        <text x="18" y="180" fill="#0f172a" font-size="9" font-weight="700" text-anchor="middle">{lbl_stem}</text>
+        <text x="18" y="193" fill="#64748b" font-size="8" text-anchor="middle">256×256</text>
+      </g>
+
+      <!-- Arrow 2 -->
+      <path d="M 108 140 L 128 140" stroke="#059669" stroke-width="2" marker-end="url(#arrGreen)" />
+
+      <!-- Stage 1 [128x128x64] -->
+      <g transform="translate(132, 75)" filter="url(#tensorShadow)">
+        <polygon points="0,0 16,-12 16,112 0,124" fill="url(#slabStg1)" />
+        <polygon points="0,0 16,-12 40,-12 24,0" fill="#a5b4fc" />
+        <polygon points="24,0 40,-12 40,112 24,124" fill="#3730a3" />
+        <text x="20" y="145" fill="#0f172a" font-size="9" font-weight="700" text-anchor="middle">{lbl_stg1}</text>
+        <text x="20" y="158" fill="#64748b" font-size="8" text-anchor="middle">128×128</text>
+      </g>
+
+      <!-- Residual Skip Connection Loop -->
+      <path d="M 156 60 C 156 20, 214 20, 214 66" fill="none" stroke="#6366f1" stroke-width="2" stroke-dasharray="3,2" marker-end="url(#arrPurple)" />
+      <text x="185" y="16" fill="#4f46e5" font-size="7.5" font-weight="bold" text-anchor="middle">{lbl_res}</text>
+
+      <!-- Arrow 3 -->
+      <path d="M 180 140 L 200 140" stroke="#059669" stroke-width="2" marker-end="url(#arrGreen)" />
+
+      <!-- Stage 2 [64x64x128] -->
+      <g transform="translate(204, 90)" filter="url(#tensorShadow)">
+        <polygon points="0,0 14,-10 14,82 0,92" fill="url(#slabStg2)" />
+        <polygon points="0,0 14,-10 46,-10 32,0" fill="#c4b5fd" />
+        <polygon points="32,0 46,-10 46,82 32,92" fill="#5b21b6" />
+        <text x="23" y="112" fill="#0f172a" font-size="9" font-weight="700" text-anchor="middle">{lbl_stg2}</text>
+        <text x="23" y="125" fill="#64748b" font-size="8" text-anchor="middle">64×64</text>
+      </g>
+
+      <!-- Arrow 4 -->
+      <path d="M 258 140 L 278 140" stroke="#059669" stroke-width="2" marker-end="url(#arrGreen)" />
+
+      <!-- Stage 3 [32x32x256] -->
+      <g transform="translate(282, 104)" filter="url(#tensorShadow)">
+        <polygon points="0,0 12,-8 12,56 0,64" fill="url(#slabStg3)" />
+        <polygon points="0,0 12,-8 52,-8 40,0" fill="#d8b4fe" />
+        <polygon points="40,0 52,-8 52,56 40,64" fill="#6b21a8" />
+        <text x="26" y="84" fill="#0f172a" font-size="9" font-weight="700" text-anchor="middle">{lbl_stg3}</text>
+        <text x="26" y="97" fill="#64748b" font-size="8" text-anchor="middle">32×32</text>
+      </g>
+
+      <!-- Arrow 5 -->
+      <path d="M 342 140 L 362 140" stroke="#059669" stroke-width="2" marker-end="url(#arrGreen)" />
+
+      <!-- Penultimate Stage 4 (A^k) [16x16x512] -->
+      <g transform="translate(366, 114)" filter="url(#tensorShadow)">
+        <polygon points="0,0 10,-6 10,38 0,44" fill="url(#slabPenult)" />
+        <polygon points="0,0 10,-6 62,-6 52,0" fill="#6ee7b7" />
+        <polygon points="52,0 62,-6 62,38 52,44" fill="#047857" />
+        <text x="31" y="62" fill="#065f46" font-size="9" font-weight="bold" text-anchor="middle">{lbl_penult}</text>
+        <text x="31" y="75" fill="#047857" font-size="8" text-anchor="middle">16×16 × 512</text>
+      </g>
+
+      <!-- Grad-CAM Hook Marker -->
+      <circle cx="397" cy="112" r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" />
+      <text x="397" y="100" fill="#b91c1c" font-size="8" font-weight="bold" text-anchor="middle">{lbl_hook}</text>
+
+      <!-- Arrow 6 -->
+      <path d="M 436 140 L 454 140" stroke="#059669" stroke-width="2" marker-end="url(#arrGreen)" />
+
+      <!-- GAP & FC Vector -->
+      <g transform="translate(458, 70)">
+        <!-- GAP box -->
+        <rect x="0" y="24" width="46" height="38" rx="4" fill="#ffffff" stroke="#059669" stroke-width="1.5" />
+        <text x="23" y="40" fill="#047857" font-size="8.5" font-weight="bold" text-anchor="middle">{lbl_gap}</text>
+        <text x="23" y="52" fill="#64748b" font-size="7.5" text-anchor="middle">1×1×D</text>
+
+        <!-- Down to Dense -->
+        <path d="M 23 62 L 23 74" stroke="#059669" stroke-width="1.5" marker-end="url(#arrGreen)" />
+
+        <!-- Dropout + FC box -->
+        <rect x="-6" y="76" width="58" height="42" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.2" />
+        <text x="23" y="92" fill="#0f172a" font-size="8" font-weight="bold" text-anchor="middle">Dropout 0.2</text>
+        <text x="23" y="106" fill="#0369a1" font-size="8" font-weight="bold" text-anchor="middle">{lbl_fc}</text>
+      </g>
     </g>
 
-    <!-- Down Arrow 1 -->
-    <path d="M 132 217 L 132 232" stroke="#6d28d9" stroke-width="2" marker-end="url(#arrowPurple)" />
+    <!-- Explanatory Pipeline Ribbon inside Section B -->
+    <g transform="translate(16, 350)">
+      <rect x="0" y="0" width="518" height="74" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" />
+      <text x="14" y="20" fill="#065f46" font-size="10.5" font-weight="700">{hier_title}</text>
+      
+      <!-- 4 Mini Feature Badges -->
+      <rect x="12" y="28" width="118" height="36" rx="4" fill="#f0fdf4" stroke="#bbf7d0" />
+      <text x="71" y="44" fill="#166534" font-size="8.5" font-weight="bold" text-anchor="middle">{h_stg1_t}</text>
+      <text x="71" y="56" fill="#475569" font-size="7.5" text-anchor="middle">{h_stg1_s}</text>
 
-    <!-- Card 2: Platform Edge & ROI -->
-    <g transform="translate(14, 239)">
-      <rect x="0" y="0" width="237" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#cardShadow)" />
-      <text x="12" y="22" fill="#5b21b6" font-size="11" font-weight="700">{st2_c2_title}</text>
-      <text x="12" y="40" fill="#475569" font-size="9.5">{st2_c2_p1}</text>
+      <rect x="138" y="28" width="118" height="36" rx="4" fill="#f5f3ff" stroke="#ddd6fe" />
+      <text x="197" y="44" fill="#5b21b6" font-size="8.5" font-weight="bold" text-anchor="middle">{h_stg2_t}</text>
+      <text x="197" y="56" fill="#475569" font-size="7.5" text-anchor="middle">{h_stg2_s}</text>
 
-      <rect x="10" y="48" width="217" height="34" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="118" y="70" fill="#0f172a" font-size="10" font-family="'Times New Roman', serif" font-style="italic" text-anchor="middle">
-        Y<tspan font-size="7">platform</tspan> = argmax<tspan font-size="7" dy="2">y∈[0.55..0.95H]</tspan><tspan dy="-2"> </tspan><tspan font-size="12">∑</tspan><tspan font-size="10"> |S<tspan font-size="7">y</tspan>(x, y)|</tspan>
-      </text>
+      <rect x="264" y="28" width="118" height="36" rx="4" fill="#eff6ff" stroke="#bfdbfe" />
+      <text x="323" y="44" fill="#1e40af" font-size="8.5" font-weight="bold" text-anchor="middle">{h_stg3_t}</text>
+      <text x="323" y="56" fill="#475569" font-size="7.5" text-anchor="middle">{h_stg3_s}</text>
 
-      <text x="12" y="100" fill="#475569" font-size="9.5">{st2_c2_sub}</text>
-      <text x="20" y="116" fill="#b91c1c" font-size="9">{st2_c2_a1}</text>
-      <text x="20" y="130" fill="#b91c1c" font-size="9">{st2_c2_a2}</text>
-      <text x="12" y="145" fill="#059669" font-size="9" font-weight="700">{st2_c2_badge}</text>
+      <rect x="390" y="28" width="116" height="36" rx="4" fill="#ecfdf5" stroke="#a7f3d0" />
+      <text x="448" y="44" fill="#047857" font-size="8.5" font-weight="bold" text-anchor="middle">{h_stg4_t}</text>
+      <text x="448" y="56" fill="#475569" font-size="7.5" text-anchor="middle">{h_stg4_s}</text>
     </g>
 
-    <!-- Down Arrow 2 -->
-    <path d="M 132 396 L 132 411" stroke="#6d28d9" stroke-width="2" marker-end="url(#arrowPurple)" />
-
-    <!-- Card 3: Uniform Dimension -->
-    <g transform="translate(14, 418)">
-      <rect x="0" y="0" width="237" height="121" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#cardShadow)" />
-      <text x="12" y="22" fill="#5b21b6" font-size="11" font-weight="700">{st2_c3_title}</text>
-      <text x="12" y="42" fill="#475569" font-size="9.5">{st2_c3_p1}</text>
-      <text x="12" y="58" fill="#475569" font-size="9.5">{st2_c3_p2}</text>
-      <text x="12" y="74" fill="#475569" font-size="9.5">{st2_c3_p3}</text>
-      <rect x="12" y="88" width="213" height="22" rx="3" fill="#ede9fe" />
-      <text x="118" y="103" fill="#6d28d9" font-size="9.5" font-weight="700" text-anchor="middle">
-        {st2_c3_badge}
+    <!-- Bottom Architecture Compatibility Bar -->
+    <g transform="translate(16, 436)">
+      <rect x="0" y="0" width="518" height="92" rx="6" fill="#ecfdf5" stroke="#34d399" stroke-width="1.2" />
+      <text x="259" y="22" fill="#065f46" font-size="10" font-weight="700" text-anchor="middle">{models_badge}</text>
+      <text x="259" y="42" fill="#1e293b" font-size="9" text-anchor="middle">{models_sub}</text>
+      
+      <rect x="18" y="54" width="482" height="26" rx="4" fill="#065f46" />
+      <text x="259" y="71" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">
+        {future_badge}
       </text>
     </g>
   </g>
 
-  <!-- Arrow: Stage 2 -> Stage 3 -->
-  <path d="M 585 372 L 610 372" stroke="#6d28d9" stroke-width="2.5" marker-end="url(#arrowPurple)" />
+  <!-- Flow Arrow: Section B -> Section C -->
+  <path d="M 948 350 L 972 350" stroke="#059669" stroke-width="3" marker-end="url(#arrGreen)" />
 
-  <!-- ================= STAGE 3: DEEP CONVOLUTIONAL BACKBONE ================= -->
-  <g transform="translate(615, 92)">
-    <rect x="0" y="0" width="275" height="560" rx="10" fill="url(#gradStage3)" stroke="#a7f3d0" stroke-width="1.5" filter="url(#shadow)" />
+  <!-- ================= SECTION C: DIAGNOSIS & GRAD-CAM (Right) ================= -->
+  <g transform="translate(975, 78)">
+    <rect x="0" y="0" width="345" height="544" rx="8" fill="url(#secCGrad)" stroke="#fde047" stroke-width="1.2" filter="url(#shadow)" />
     
-    <!-- Stage Header -->
-    <rect x="12" y="12" width="251" height="34" rx="6" fill="#059669" />
-    <text x="137" y="34" fill="#ffffff" font-size="11.5" font-weight="700" text-anchor="middle">
-      {st3_title}
-    </text>
+    <!-- Section Title -->
+    <rect x="10" y="10" width="325" height="28" rx="5" fill="#d97706" />
+    <text x="172" y="28" fill="#ffffff" font-size="11.5" font-weight="700" text-anchor="middle">{sec_c_title}</text>
 
-    <!-- CNN Architecture Card -->
-    <g transform="translate(14, 58)">
-      <rect x="0" y="0" width="247" height="235" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#cardShadow)" />
-      <text x="12" y="22" fill="#047857" font-size="11" font-weight="700">{st3_c1_title}</text>
+    <!-- Upper Card: Diagnostic Classification Head -->
+    <g transform="translate(12, 48)">
+      <rect x="0" y="0" width="321" height="186" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" />
+      <text x="14" y="22" fill="#92400e" font-size="11" font-weight="700">{diag_title}</text>
+
+      <!-- Two Outcome Badges -->
+      <rect x="10" y="34" width="144" height="50" rx="5" fill="#fef2f2" stroke="#f87171" stroke-width="1.2" />
+      <text x="82" y="52" fill="#dc2626" font-size="9.5" font-weight="bold" text-anchor="middle">{c_flat}</text>
+      <text x="82" y="68" fill="#991b1b" font-size="8.5" text-anchor="middle">{c_flat_sub}</text>
+
+      <rect x="166" y="34" width="144" height="50" rx="5" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.2" />
+      <text x="238" y="52" fill="#16a34a" font-size="9.5" font-weight="bold" text-anchor="middle">{c_norm}</text>
+      <text x="238" y="68" fill="#14532d" font-size="8.5" text-anchor="middle">{c_norm_sub}</text>
+
+      <!-- Benchmark Metrics summary inside box -->
+      <rect x="10" y="94" width="300" height="80" rx="4" fill="#fffbeb" stroke="#fef08a" />
+      <text x="160" y="112" fill="#b45309" font-size="9.5" font-weight="bold" text-anchor="middle">{test_cohort}</text>
       
-      <!-- Network 1 -->
-      <rect x="10" y="34" width="227" height="48" rx="4" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1" />
-      <text x="18" y="52" fill="#065f46" font-size="10" font-weight="700">{st3_c1_m1}</text>
-      <text x="18" y="68" fill="#475569" font-size="8.5">{st3_c1_m1_sub}</text>
-
-      <!-- Network 2 -->
-      <rect x="10" y="88" width="227" height="48" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="18" y="106" fill="#1e293b" font-size="10" font-weight="700">{st3_c1_m2}</text>
-      <text x="18" y="122" fill="#475569" font-size="8.5">{st3_c1_m2_sub}</text>
-
-      <!-- Network 3 -->
-      <rect x="10" y="142" width="227" height="48" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="18" y="160" fill="#1e293b" font-size="10" font-weight="700">{st3_c1_m3}</text>
-      <text x="18" y="176" fill="#475569" font-size="8.5">{st3_c1_m3_sub}</text>
-
-      <!-- Custom Future Badge -->
-      <rect x="10" y="196" width="227" height="28" rx="4" fill="#ecfdf5" stroke="#34d399" stroke-width="1" />
-      <text x="123" y="214" fill="#059669" font-size="9" font-weight="700" text-anchor="middle">
-        {st3_c1_custom}
-      </text>
+      <text x="20" y="132" fill="#0f172a" font-size="9">{sens_lbl} <tspan font-weight="bold" fill="#047857">{sens_val}</tspan> (130/137)</text>
+      <text x="20" y="148" fill="#0f172a" font-size="9">{auc_lbl} <tspan font-weight="bold" fill="#047857">0.9222</tspan> (EfficientNet-B2)</text>
+      <text x="20" y="164" fill="#0f172a" font-size="9">{acc_lbl} <tspan font-weight="bold" fill="#047857">{acc_val}</tspan> (F1: 0.8865)</text>
     </g>
 
-    <!-- Down Arrow 1 -->
-    <path d="M 137 300 L 137 315" stroke="#059669" stroke-width="2" marker-end="url(#arrowGreen)" />
+    <!-- Backward Gradient Arrow to Penultimate Layer (Visual Backprop) -->
+    <path d="M 172 240 C 172 252, 60 252, -195 252" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrRed)" />
+    <text x="75" y="248" fill="#dc2626" font-size="8.5" font-weight="bold">{grad_flow_lbl}</text>
 
-    <!-- Optimization Card -->
-    <g transform="translate(14, 322)">
-      <rect x="0" y="0" width="247" height="217" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#cardShadow)" />
-      <text x="12" y="22" fill="#047857" font-size="11" font-weight="700">{st3_c2_title}</text>
-      
-      <!-- Loss Equation -->
-      <rect x="10" y="32" width="227" height="52" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="123" y="52" fill="#0f172a" font-size="10" font-family="'Times New Roman', serif" font-style="italic" text-anchor="middle">
-        L<tspan font-size="7">CE</tspan> = - <tspan font-size="11">∑</tspan> w<tspan font-size="7">c</tspan> [ y log(p̂) + (1-y) log(1-p̂) ]
+    <!-- Lower Card: Grad-CAM Explainability Engine -->
+    <g transform="translate(12, 260)">
+      <rect x="0" y="0" width="321" height="268" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" />
+      <text x="14" y="22" fill="#92400e" font-size="11" font-weight="700">{xai_title}</text>
+
+      <!-- Heatmap Palette Bar -->
+      <rect x="14" y="32" width="293" height="12" rx="3" fill="url(#heatGrad)" />
+      <text x="18" y="56" fill="#475569" font-size="7.5">{saliency_low}</text>
+      <text x="245" y="56" fill="#dc2626" font-size="7.5" font-weight="bold">{saliency_high}</text>
+
+      <!-- Anatomical Focus List with visual bullets -->
+      <rect x="10" y="66" width="301" height="34" rx="4" fill="#fef2f2" stroke="#fecaca" />
+      <text x="18" y="82" fill="#991b1b" font-size="9" font-weight="bold">{roi_1_t}</text>
+      <text x="18" y="94" fill="#7f1d1d" font-size="7.5">{roi_1_s}</text>
+
+      <rect x="10" y="106" width="301" height="34" rx="4" fill="#fffbeb" stroke="#fef08a" />
+      <text x="18" y="122" fill="#92400e" font-size="9" font-weight="bold">{roi_2_t}</text>
+      <text x="18" y="134" fill="#78350f" font-size="7.5">{roi_2_s}</text>
+
+      <rect x="10" y="146" width="301" height="34" rx="4" fill="#f0fdf4" stroke="#bbf7d0" />
+      <text x="18" y="162" fill="#166534" font-size="9" font-weight="bold">{roi_3_t}</text>
+      <text x="18" y="174" fill="#14532d" font-size="7.5">{roi_3_s}</text>
+
+      <!-- Clinical Reliability Box -->
+      <rect x="10" y="190" width="301" height="66" rx="4" fill="#1e293b" />
+      <text x="160" y="210" fill="#38bdf8" font-size="9.5" font-weight="bold" text-anchor="middle">
+        {val_title}
       </text>
-      <text x="123" y="72" fill="#64748b" font-size="8.5" text-anchor="middle">
-        w<tspan font-size="7">normal</tspan> = 1.231,  w<tspan font-size="7">pes_planus</tspan> = 0.842
+      <text x="160" y="228" fill="#f1f5f9" font-size="8" text-anchor="middle">
+        {val_sub}
       </text>
-
-      <text x="12" y="102" fill="#475569" font-size="9.5">{st3_c2_p1}</text>
-      <text x="12" y="118" fill="#475569" font-size="9.5">{st3_c2_p2}</text>
-      <text x="12" y="134" fill="#475569" font-size="9.5">{st3_c2_p3}</text>
-      <text x="12" y="150" fill="#475569" font-size="9.5">{st3_c2_p4}</text>
-      <text x="12" y="166" fill="#475569" font-size="9.5">{st3_c2_p5}</text>
-      
-      <rect x="10" y="178" width="227" height="28" rx="3" fill="#d1fae5" />
-      <text x="123" y="196" fill="#065f46" font-size="9.5" font-weight="700" text-anchor="middle">
-        {st3_c2_badge}
-      </text>
-    </g>
-  </g>
-
-  <!-- Arrow: Stage 3 -> Stage 4 -->
-  <path d="M 890 372 L 915 372" stroke="#059669" stroke-width="2.5" marker-end="url(#arrowGreen)" />
-
-  <!-- ================= STAGE 4: CLINICAL DIAGNOSIS & EXPLAINABILITY ================= -->
-  <g transform="translate(920, 92)">
-    <rect x="0" y="0" width="255" height="560" rx="10" fill="url(#gradStage4)" stroke="#fde68a" stroke-width="1.5" filter="url(#shadow)" />
-    
-    <!-- Stage Header -->
-    <rect x="12" y="12" width="231" height="34" rx="6" fill="#d97706" />
-    <text x="127" y="34" fill="#ffffff" font-size="11.5" font-weight="700" text-anchor="middle">
-      {st4_title}
-    </text>
-
-    <!-- Card 1: Benchmark Metrics -->
-    <g transform="translate(14, 58)">
-      <rect x="0" y="0" width="227" height="185" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#cardShadow)" />
-      <text x="12" y="22" fill="#b45309" font-size="11" font-weight="700">{st4_c1_title}</text>
-
-      <!-- Mini Table -->
-      <rect x="8" y="32" width="211" height="110" rx="4" fill="#fffbeb" stroke="#fef3c7" stroke-width="1" />
-      <text x="16" y="50" fill="#92400e" font-size="9" font-weight="700">{st4_c1_top}</text>
-      <text x="16" y="68" fill="#1e293b" font-size="9.5">{st4_c1_acc} <tspan font-weight="700" fill="#047857">{acc_val}</tspan></text>
-      <text x="16" y="84" fill="#1e293b" font-size="9.5">{st4_c1_auc} <tspan font-weight="700" fill="#047857">0.9222</tspan></text>
-      <text x="16" y="100" fill="#1e293b" font-size="9.5">{st4_c1_sens} <tspan font-weight="700" fill="#047857">{sens_val}</tspan> <tspan font-size="8" fill="#64748b">{st4_c1_sens_sub}</tspan></text>
-      <text x="16" y="116" fill="#1e293b" font-size="9.5">{st4_c1_spec} <tspan font-weight="700" fill="#047857">{spec_val}</tspan></text>
-      <text x="16" y="132" fill="#1e293b" font-size="9.5">{st4_c1_f1} <tspan font-weight="700" fill="#047857">0.8865</tspan></text>
-
-      <text x="12" y="158" fill="#475569" font-size="8.5">{st4_c1_note}</text>
-      <text x="12" y="174" fill="#059669" font-size="9" font-weight="700">{st4_c1_badge}</text>
-    </g>
-
-    <!-- Down Arrow -->
-    <path d="M 127 250 L 127 265" stroke="#d97706" stroke-width="2" marker-end="url(#arrowAmber)" />
-
-    <!-- Card 2: Grad-CAM Explainability -->
-    <g transform="translate(14, 272)">
-      <rect x="0" y="0" width="227" height="267" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" filter="url(#cardShadow)" />
-      <text x="12" y="22" fill="#b45309" font-size="11" font-weight="700">{st4_c2_title}</text>
-      <text x="12" y="38" fill="#475569" font-size="9">{st4_c2_p1}</text>
-
-      <!-- Grad-CAM formula -->
-      <rect x="8" y="46" width="211" height="58" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="113" y="66" fill="#0f172a" font-size="9.5" font-family="'Times New Roman', serif" font-style="italic" text-anchor="middle">
-        α<tspan font-size="7">k</tspan><tspan font-size="7">c</tspan> = (1/Z) <tspan font-size="12">∑</tspan><tspan font-size="7" dy="2">i</tspan><tspan font-size="12" dy="-2">∑</tspan><tspan font-size="7" dy="2">j</tspan><tspan dy="-2"> (∂y</tspan><tspan font-size="7">c</tspan> / ∂A<tspan font-size="7">ij</tspan><tspan font-size="7">k</tspan>)
-      </text>
-      <text x="113" y="88" fill="#0f172a" font-size="10" font-family="'Times New Roman', serif" font-style="italic" text-anchor="middle">
-        L<tspan font-size="7">Grad-CAM</tspan><tspan font-size="7">c</tspan> = ReLU( <tspan font-size="11">∑</tspan><tspan font-size="7">k</tspan> α<tspan font-size="7">k</tspan><tspan font-size="7">c</tspan> A<tspan font-size="7">k</tspan> )
-      </text>
-
-      <text x="12" y="122" fill="#0369a1" font-size="9.5" font-weight="700">{st4_c2_sub}</text>
-      
-      <rect x="8" y="132" width="211" height="24" rx="3" fill="#fef2f2" stroke="#fecaca" stroke-width="0.8" />
-      <text x="16" y="148" fill="#991b1b" font-size="8.5" font-weight="600">{st4_c2_a1}</text>
-
-      <rect x="8" y="160" width="211" height="24" rx="3" fill="#fffbeb" stroke="#fde68a" stroke-width="0.8" />
-      <text x="16" y="176" fill="#92400e" font-size="8.5" font-weight="600">{st4_c2_a2}</text>
-
-      <rect x="8" y="188" width="211" height="24" rx="3" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="0.8" />
-      <text x="16" y="204" fill="#166534" font-size="8.5" font-weight="600">{st4_c2_a3}</text>
-
-      <rect x="8" y="218" width="211" height="38" rx="4" fill="#1e293b" />
-      <text x="113" y="233" fill="#f8fafc" font-size="8.5" font-weight="600" text-anchor="middle">
-        {st4_c2_sc1}
-      </text>
-      <text x="113" y="247" fill="#94a3b8" font-size="7.5" text-anchor="middle">
-        {st4_c2_sc2}
+      <text x="160" y="244" fill="#94a3b8" font-size="7.5" text-anchor="middle">
+        {val_note}
       </text>
     </g>
   </g>
