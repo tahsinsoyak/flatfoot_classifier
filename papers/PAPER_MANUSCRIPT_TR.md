@@ -56,12 +56,23 @@ Bu çalışmada, açı hesaplama ve nirengi tespiti darboğazını aşmak amacı
 Görüntüler orijinalinde 16-bit gri tonlamalı PNG formatında olup, çözünürlükleri 2428 × 3003 ile 3072 × 3072 piksel arasında değişmektedir.
 
 ### 2.2 Medikal Görüntü Ön İşleme (Preprocessing)
-Görüntülerdeki çekim parametresi farklılıklarını ve artefaktları gidermek için 6 aşamalı deterministik boru hattı uygulanmıştır:
-1. **Dinamik Aralık Pencereleme:** %1 ve %99 persentil sınırları kullanılarak 16-bit radyografiler 8-bit $[0, 255]$ aralığına normalize edilmiştir.
-2. **CLAHE Kontrastı:** Kemik trabeküler yapısını ve eklem boşluklarını belirginleştirmek için 2.0 klip limiti ve $8 \times 8$ ızgara boyutuyla CLAHE uygulanmıştır.
-3. **Kaval Kemiği ile Yön Standardizasyonu:** Kaval kemiği (tibia) dikey olarak ayak bileğine girmektedir. Görüntünün üst yarısındaki kolon yoğunluk profili incelenerek kaval kemiğinin X koordinatı ($X_{\text{tibia}}$) tespit edilmiştir. $X_{\text{tibia}} > W/2$ ise ayağın sola baktığı tespit edilmiş ve görsel yatay olarak çevrilerek tüm ayakların parmakları sağa bakacak şekilde kanonik yönelim sağlanmıştır (768 sol, 761 sağ ayak başarıyla eşitlenmiştir).
-4. **Basamak Tespiti ve Ayak ROI Kırpma:** Yatay Sobel gradyan filtresiyle hastanın bastığı platform yüzeyi tespit edilmiş; platformun altındaki metal iskelet/ayaklar, üstteki bacak kemikleri ve köşelerdeki "L"/"R" harf etiketleri kesilerek sadece ayak bölgesi izole edilmiştir.
+Görüntülerdeki çekim parametresi farklılıklarını ve artefaktları gidermek için otomatik deterministik boru hattı (`FootRadiographPreprocessor`) geliştirilmiştir:
+
+1. **Dinamik Aralık Pencereleme:** %1 ve %99 persentil sınırları ($P_1, P_{99}$) kullanılarak 16-bit radyografiler 8-bit $[0, 255]$ aralığına normalize edilmiştir:
+   $$I_{\text{8-bit}}(x, y) = \text{clip}\left(\frac{I_{\text{16-bit}}(x, y) - P_1}{P_{99} - P_1 + 10^{-6}}, 0, 1\right) \times 255$$
+2. **CLAHE Kontrast Artırımı:** Kemik trabeküler yapısını ve eklem boşluklarını belirginleştirmek için 2.0 klip limiti ve $8 \times 8$ ızgara boyutuyla CLAHE uygulanmıştır.
+3. **Kaval Kemiği ile Yön Standardizasyonu:** Kaval kemiği (tibia) dikey olarak ayak bileğine girmektedir. Görüntünün üst yarısındaki ($y \in [0.35H, 0.50H]$) kolon yoğunluk profili analiz edilerek kaval kemiğinin yatay ekseni ($X_{\text{tibia}}$) tespit edilmiştir:
+   $$\rho_{\text{dikey}}(x) = \sum_{y = 0.35H}^{0.50H} I(x, y), \quad X_{\text{tibia}} = \arg\max_{x} \left(\rho_{\text{dikey}} * G_{\sigma=15}\right)(x)$$
+   $$I_{\text{hizalanmis}}(x, y) = \begin{cases} I(W - 1 - x, y), & X_{\text{tibia}} > W/2 \text{ (sola bakan ayak)} \\ I(x, y), & X_{\text{tibia}} \le W/2 \text{ (sağa bakan ayak)} \end{cases}$$
+   Böylece tüm dataset parmaklar sağa bakacak şekilde kanonik yönelime eşitlenmiştir.
+4. **Basamak Tespiti ve Ayak ROI Kırpma:** Dikey Sobel gradyan filtresiyle ($K_y$) hastanın bastığı platform yüzeyi tespit edilmiştir:
+   $$Y_{\text{basamak}} = \arg\max_{y \in [0.55H, 0.95H]} \sum_{x = 0.2W}^{0.8W} |S_y(x, y)|, \quad \text{burada } S_y = I * K_y$$
+   Platformun altındaki metal aksam, üstteki bacak kemikleri ve köşelerdeki "L"/"R" harf etiketleri kesilerek sadece anatomik ayak kompleksi izole edilmiştir.
 5. **Yeniden Boyutlandırma:** Kırpılan ayak bölgeleri $512 \times 512$ piksel standart boyuta getirilmiştir.
+
+![Metodoloji Mimarisi](file:///C:/Users/tahsinsoyak/Desktop/proje_github_clone/flatfoot_classifier/papers/methodology_architecture_tr.svg)
+*Şekil 1: Önerilen uçtan uca düz taban derin öğrenme metodolojisinin mimari diyagramı; 16-bit dinamik pencereleme, CLAHE kontrast iyileştirme, kaval kemiği ekseniyle kanonik yönlendirme, basamak ve ROI kırpma, derin konvolüsyonel omurga eğitimi ve Grad-CAM klinik açıklanabilirlik aşamalarını göstermektedir.*
+
 
 ### 2.3 Katmanlı (Stratified) Veri Bölümleme
 Veri sızıntısını (data leakage) engellemek için veri seti katmanlı olarak 3 kümeye bölünmüştür:

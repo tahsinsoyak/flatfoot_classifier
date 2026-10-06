@@ -57,32 +57,23 @@ The study utilized 1,529 weight-bearing lateral foot radiographs obtained from c
 All radiographs were acquired in the standard standing lateral projection with full weight bearing. Original images were stored as 16-bit grayscale PNG files with resolutions ranging from 2428 × 3003 to 3072 × 3072 pixels.
 
 ### 2.2 Medical Image Preprocessing Pipeline
-Raw medical radiographs exhibit vast variations in exposure, equipment borders, and limb laterality. We developed a six-stage deterministic preprocessing algorithm (`FootRadiographPreprocessor`):
+Raw medical radiographs exhibit vast variations in exposure, equipment borders, and limb laterality. We developed an automated deterministic preprocessing algorithm (`FootRadiographPreprocessor`):
 
-1. **Percentile Windowing (16-bit to 8-bit):** To accommodate varying X-ray tube voltages and dynamic ranges, pixel intensities were clipped to the 1st and 99th percentiles ($P_1, P_{99}$) and mapped to $[0, 255]$:
-   $$I_{\text{8-bit}} = \text{clip}\left(\frac{I_{\text{16-bit}} - P_1}{P_{99} - P_1}, 0, 1\right) \times 255$$
-2. **Contrast Enhancement (CLAHE):** Contrast Limited Adaptive Histogram Equalization was applied with a clip limit of 2.0 and an $8 \times 8$ grid size to sharpen bone trabeculae, cortical margins, and joint interfaces.
-3. **Tibia-Axis Orientation Standardization:** Radiographs contain both left and right feet, causing arbitrary toe directions. In weight-bearing projections, the tibia and fibula enter vertically into the ankle complex. By computing the horizontal column density in the upper third ($y \in [0.35H, 0.50H]$), the horizontal coordinate of the tibial shaft ($X_{\text{tibia}}$) was localized:
-   $$\text{Direction} = \begin{cases} \text{Left (toes point left)}, & \text{if } X_{\text{tibia}} > W/2 \\ \text{Right (toes point right)}, & \text{if } X_{\text{tibia}} \le W/2 \end{cases}$$
-   All left-pointing images were horizontally mirrored to enforce a canonical right-facing orientation.
-4. **Platform Edge & Foot ROI Cropping:** The patient standing platform was detected via a horizontal Sobel gradient filter. The foot ROI was segmented above the platform surface, removing the table legs below and the upper tibial shaft above. Radiopaque letter markers ("L"/"R") located in the peripheral background were systematically eliminated.
+1. **Dynamic Percentile Windowing (16-bit to 8-bit):** To accommodate varying X-ray tube voltages and high-dynamic ranges (0–65,535), pixel intensities were clipped to the 1st and 99th percentiles ($P_1, P_{99}$) and mapped to $[0, 255]$:
+   $$I_{\text{8-bit}}(x, y) = \text{clip}\left(\frac{I_{\text{16-bit}}(x, y) - P_1}{P_{99} - P_1 + 10^{-6}}, 0, 1\right) \times 255$$
+2. **Contrast Enhancement (CLAHE):** Contrast Limited Adaptive Histogram Equalization was applied with a clip limit of 2.0 and an $8 \times 8$ contextual grid size to sharpen trabecular bone micro-textures, cortical contours, and articular margins.
+3. **Tibial-Axis Canonical Orientation Standardization:** Radiographs contain both left and right feet, causing arbitrary toe directions. In weight-bearing projections, the tibia and fibula enter vertically into the ankle complex. By computing the horizontal column density in the upper shaft band ($y \in [0.35H, 0.50H]$), the horizontal coordinate of the tibial shaft ($X_{\text{tibia}}$) was localized:
+   $$\rho_{\text{vertical}}(x) = \sum_{y = 0.35H}^{0.50H} I(x, y), \quad X_{\text{tibia}} = \arg\max_{x} \left(\rho_{\text{vertical}} * G_{\sigma=15}\right)(x)$$
+   $$I_{\text{aligned}}(x, y) = \begin{cases} I(W - 1 - x, y), & \text{if } X_{\text{tibia}} > W/2 \text{ (toes face left)} \\ I(x, y), & \text{if } X_{\text{tibia}} \le W/2 \text{ (toes face right)} \end{cases}$$
+   All left-pointing images were horizontally mirrored to enforce a 100% canonical right-facing orientation.
+4. **Platform Edge Detection and Foot ROI Cropping:** The patient standing platform was detected via a vertical Sobel gradient operator ($K_y$). The platform surface was localized in the lower region ($y \in [0.55H, 0.95H]$):
+   $$Y_{\text{platform}} = \arg\max_{y \in [0.55H, 0.95H]} \sum_{x = 0.2W}^{0.8W} |S_y(x, y)|, \quad \text{where } S_y = I * K_y$$
+   The foot ROI was cropped immediately above $Y_{\text{platform}}$, systematically eliminating metal table structures below, the upper tibial shaft above, and radiopaque orientation tags ("L"/"R").
 5. **Resolution Standardization:** Cropped foot ROIs were bilinearly resampled to a standardized dimension of $512 \times 512$ pixels.
 
-```
-Raw 16-bit Radiograph (~3000x3000)
-       │
-       ▼
-Percentile Windowing (1%-99%) + CLAHE Enhancement
-       │
-       ▼
-Proximal Tibial Axis Detection (Shin-x > W/2 -> Mirror to Canonical Right)
-       │
-       ▼
-Platform Edge Detection (Sobel-Y) + Foot ROI Bounding Box Extraction
-       │
-       ▼
-Standardized 512x512 Canonical Foot Radiograph
-```
+![Methodology Architecture](file:///C:/Users/tahsinsoyak/Desktop/proje_github_clone/flatfoot_classifier/papers/methodology_architecture_en.svg)
+*Figure 1: End-to-end clinical workflow and methodology architecture of the proposed flatfoot deep learning framework, including 16-bit dynamic percentile windowing, CLAHE contrast enhancement, tibial-axis canonical orientation standardization, platform ROI extraction, deep feature backbone benchmarking, and Grad-CAM explainability validation.*
+
 
 ### 2.3 Dataset Partitioning
 To prevent data contamination and guarantee unbiased evaluation, the 1,529 preprocessed images were partitioned using stratified sampling:

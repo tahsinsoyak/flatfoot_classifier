@@ -1,13 +1,23 @@
-"""Script to compile professional academic archive PDFs (English & Turkish) using headless browser engine."""
+"""Script to compile professional academic archive PDFs (English & Turkish)
+with publication-grade SVG architecture diagrams, embedded vector math equations,
+and diagnostic visualization figures using headless browser engine.
+"""
 
 from __future__ import annotations
 import os
 import sys
+import io
 import base64
 import subprocess
 from pathlib import Path
 
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 
 def img_to_base64(path: Path | str) -> str:
@@ -21,105 +31,137 @@ def img_to_base64(path: Path | str) -> str:
     return f"data:{mime};base64,{base64.b64encode(data).decode('utf-8')}"
 
 
+def render_latex_svg(latex_str: str, fontsize: int = 12, fig_width: float = 7.0, fig_height: float = 0.75) -> str:
+    """Render LaTeX equation to an inline, clean SVG using Matplotlib's mathtext engine."""
+    fig = plt.figure(figsize=(fig_width, fig_height))
+    fig.patch.set_alpha(0.0)
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.axis("off")
+    ax.patch.set_alpha(0.0)
+    ax.text(0.5, 0.5, latex_str, fontsize=fontsize, ha="center", va="center", color="#0f172a")
+    buf = io.BytesIO()
+    fig.savefig(buf, format="svg", bbox_inches="tight", transparent=True, pad_inches=0.03)
+    plt.close(fig)
+    svg_str = buf.getvalue().decode("utf-8")
+    # Strip XML header if present
+    if "<?xml" in svg_str:
+        svg_str = svg_str[svg_str.find("<svg"):]
+    return svg_str
+
+
 def get_css() -> str:
     return """
     @page {
         size: A4;
-        margin: 20mm 18mm 20mm 18mm;
+        margin: 18mm 16mm 18mm 16mm;
         @bottom-right {
             content: counter(page);
             font-family: 'Times New Roman', serif;
             font-size: 9pt;
-            color: #555;
+            color: #64748b;
         }
+    }
+    *, *::before, *::after {
+        box-sizing: border-box;
     }
     body {
         font-family: 'Times New Roman', Times, serif;
         font-size: 10.5pt;
         line-height: 1.5;
-        color: #111;
-        background: #fff;
+        color: #0f172a;
+        background: #ffffff;
         margin: 0;
         padding: 0;
     }
     .header-tag {
-        font-family: Arial, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         font-size: 8.5pt;
-        color: #666;
+        font-weight: 600;
+        color: #475569;
         text-transform: uppercase;
         letter-spacing: 0.8px;
-        border-bottom: 1px solid #ccc;
-        padding-bottom: 4px;
-        margin-bottom: 18px;
+        border-bottom: 1.5px solid #cbd5e1;
+        padding-bottom: 5px;
+        margin-bottom: 16px;
+        display: flex;
+        justify-content: space-between;
     }
     h1.title {
-        font-size: 18pt;
+        font-size: 17.5pt;
         font-weight: bold;
         line-height: 1.25;
         text-align: center;
-        margin: 12px 0 16px 0;
-        color: #1a1a1a;
+        margin: 10px 0 14px 0;
+        color: #0f172a;
     }
     .authors {
         text-align: center;
         font-size: 11pt;
         font-weight: bold;
+        color: #1e293b;
         margin-bottom: 4px;
     }
     .affiliations {
         text-align: center;
         font-size: 9pt;
-        color: #444;
-        margin-bottom: 20px;
+        color: #475569;
+        margin-bottom: 18px;
         font-style: italic;
+        line-height: 1.35;
     }
     .abstract-box {
-        background-color: #f9fbfd;
-        border-left: 3.5px solid #1a5276;
+        background-color: #f8fafc;
+        border-left: 4px solid #0284c7;
         border-top: 1px solid #e2e8f0;
         border-right: 1px solid #e2e8f0;
         border-bottom: 1px solid #e2e8f0;
+        border-radius: 4px;
         padding: 12px 16px;
-        margin: 0 10px 24px 10px;
+        margin: 0 4px 22px 4px;
         font-size: 9.5pt;
         line-height: 1.45;
         text-align: justify;
     }
     .abstract-title {
+        font-family: Arial, sans-serif;
         font-weight: bold;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.6px;
         font-size: 10pt;
-        color: #1a5276;
+        color: #0369a1;
         margin-bottom: 6px;
     }
     .keywords {
-        margin-top: 8px;
+        margin-top: 10px;
         font-size: 9pt;
+        border-top: 1px dashed #cbd5e1;
+        padding-top: 6px;
     }
     .keywords strong {
-        color: #1a5276;
+        color: #0284c7;
     }
     h2 {
-        font-size: 13pt;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12.5pt;
         font-weight: bold;
-        color: #1a365d;
-        border-bottom: 1.5px solid #1a365d;
+        color: #0f172a;
+        border-bottom: 1.5px solid #0284c7;
         padding-bottom: 3px;
         margin-top: 22px;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
     h3 {
-        font-size: 11pt;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 10.5pt;
         font-weight: bold;
-        color: #2c3e50;
+        color: #1e293b;
         margin-top: 14px;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
     }
     p {
         text-align: justify;
-        margin: 0 0 10px 0;
-        text-indent: 1.5em;
+        margin: 0 0 9px 0;
+        text-indent: 1.4em;
     }
     p.no-indent {
         text-indent: 0;
@@ -127,61 +169,90 @@ def get_css() -> str:
     table.academic-table {
         width: 100%;
         border-collapse: collapse;
-        margin: 16px 0;
+        margin: 14px 0 6px 0;
         font-size: 9pt;
     }
     table.academic-table th {
-        border-top: 2px solid #222;
-        border-bottom: 1.5px solid #222;
-        padding: 7px 6px;
+        border-top: 2px solid #0f172a;
+        border-bottom: 1.5px solid #0f172a;
+        padding: 6px 6px;
         background-color: #f1f5f9;
         font-weight: bold;
         text-align: center;
+        color: #0f172a;
     }
     table.academic-table td {
         border-bottom: 1px solid #e2e8f0;
-        padding: 6px 6px;
+        padding: 5.5px 6px;
         text-align: center;
     }
     table.academic-table tr:last-child td {
-        border-bottom: 2px solid #222;
+        border-bottom: 2px solid #0f172a;
     }
     .caption {
         font-size: 8.5pt;
-        color: #444;
+        color: #475569;
         text-align: center;
         margin-top: 6px;
-        margin-bottom: 18px;
+        margin-bottom: 16px;
         font-style: italic;
+        line-height: 1.35;
     }
     .figure-container {
         text-align: center;
-        margin: 18px 0;
+        margin: 16px 0 10px 0;
         page-break-inside: avoid;
     }
     .figure-container img {
-        max-width: 92%;
+        max-width: 96%;
         height: auto;
         border: 1px solid #cbd5e1;
         border-radius: 4px;
     }
-    .equation-box {
+    .figure-container-full {
         text-align: center;
-        background: #f8fafc;
-        padding: 8px;
-        margin: 10px 0;
-        font-family: 'Cambria Math', 'Latin Modern Math', 'Times New Roman', serif;
-        font-size: 11pt;
+        margin: 14px 0 8px 0;
+        page-break-inside: avoid;
+    }
+    .figure-container-full svg {
+        width: 100%;
+        max-height: 480px;
+        height: auto;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+    }
+    .equation-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fbfcfe;
         border: 1px solid #e2e8f0;
         border-radius: 4px;
+        padding: 4px 14px;
+        margin: 9px 0;
+        page-break-inside: avoid;
+    }
+    .equation-content {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .equation-num {
+        font-family: 'Times New Roman', serif;
+        font-size: 10pt;
+        color: #475569;
+        font-weight: normal;
+        padding-left: 10px;
     }
     .ref-list {
         font-size: 8.5pt;
         line-height: 1.4;
-        padding-left: 20px;
+        padding-left: 18px;
+        margin-top: 6px;
     }
     .ref-list li {
-        margin-bottom: 6px;
+        margin-bottom: 5px;
         text-align: justify;
     }
     .page-break {
@@ -190,7 +261,33 @@ def get_css() -> str:
     """
 
 
-def generate_english_html(roc_b64: str, gradcam_b64: str) -> str:
+def generate_english_html(roc_b64: str, gradcam_b64: str, arch_svg: str) -> str:
+    # Compile clean SVG vector equations with raw LaTeX strings
+    eq1_svg = render_latex_svg(
+        r"$I_{\mathrm{8-bit}}(x, y) = \mathrm{clip}\left(\frac{I_{\mathrm{16-bit}}(x, y) - P_1}{P_{99} - P_1 + 10^{-6}},\, 0,\, 1\right) \times 255$",
+        fontsize=11.5, fig_width=6.6, fig_height=0.65
+    )
+    eq2_svg = render_latex_svg(
+        r"$\rho_{\mathrm{vert}}(x) = \sum_{y=0.35H}^{0.50H} I(x, y), \quad X_{\mathrm{tibia}} = \arg\max_{x} \left(\rho_{\mathrm{vert}} * G_{\sigma=15}\right)(x)$",
+        fontsize=11.5, fig_width=6.6, fig_height=0.65
+    )
+    eq3_svg = render_latex_svg(
+        r"$I_{\mathrm{aligned}}(x, y) = I(W - 1 - x,\, y)\quad [\mathrm{if}\ X_{\mathrm{tibia}} > W/2], \quad I(x,\, y)\quad [\mathrm{if}\ X_{\mathrm{tibia}} \leq W/2]$",
+        fontsize=11.5, fig_width=6.8, fig_height=0.65
+    )
+    eq4_svg = render_latex_svg(
+        r"$Y_{\mathrm{platform}} = \arg\max_{y \in [0.55H,\, 0.95H]} \sum_{x=0.2W}^{0.8W} |S_y(x, y)|, \quad \text{where } S_y = I * K_y$",
+        fontsize=11.5, fig_width=6.6, fig_height=0.65
+    )
+    eq5_svg = render_latex_svg(
+        r"$\mathcal{L}_{\mathrm{CE}}(\theta) = -\frac{1}{B} \sum_{i=1}^B w_{y_i} \left[ y_i \log \hat{p}_i + (1 - y_i) \log(1 - \hat{p}_i) \right]$",
+        fontsize=11.5, fig_width=6.4, fig_height=0.65
+    )
+    eq6_svg = render_latex_svg(
+        r"$\alpha_k^c = \frac{1}{Z} \sum_{i=1}^U \sum_{j=1}^V \frac{\partial y^c}{\partial A_{i,j}^k}, \quad L_{\mathrm{Grad\text{-}CAM}}^c(i, j) = \mathrm{ReLU}\left( \sum_{k=1}^K \alpha_k^c A^k(i, j) \right)$",
+        fontsize=11.5, fig_width=6.8, fig_height=0.70
+    )
+
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -201,7 +298,8 @@ def generate_english_html(roc_b64: str, gradcam_b64: str) -> str:
 <body>
 
 <div class="header-tag">
-    arXiv / Academic Archive Preprint &bull; Musculoskeletal Diagnostic AI &bull; October 2026
+    <span>arXiv / Academic Archive Preprint &bull; Musculoskeletal Diagnostic AI</span>
+    <span>October 2026</span>
 </div>
 
 <h1 class="title">
@@ -220,7 +318,7 @@ def generate_english_html(roc_b64: str, gradcam_b64: str) -> str:
 <div class="abstract-box">
     <div class="abstract-title">Abstract</div>
     <strong>Background:</strong> Flatfoot (<em>pes planus</em>) is a common musculoskeletal deformity characterized by the collapse of the medial longitudinal arch. Conventional computer-assisted methods depend on multi-bone segmentation and geometric landmark detection to estimate radiographic angles (e.g., Meary’s angle and calcaneal pitch). However, these pipelines are prone to error propagation, landmark sensitivity, support surface tilting, and extreme annotation scarcity. In this paper, we propose an automated end-to-end deep learning framework that directly classifies weight-bearing lateral foot radiographs into flatfoot and normal categories without requiring dense anatomical landmark annotations.<br><br>
-    <strong>Methods:</strong> A clinical cohort of <strong>1,529 weight-bearing lateral foot radiographs</strong> (908 pes planus, 621 normal) was collected. We constructed an automated medical preprocessing pipeline featuring 16-bit to 8-bit dynamic windowing, Contrast Limited Adaptive Histogram Equalization (CLAHE), proximal tibial-axis canonical orientation standardization (all feet facing right), and platform edge detection to crop the foot ROI while eliminating extraneous apparatus and radiographic "L"/"R" markers. The dataset was partitioned into stratified training (69.98%, n=1,070), validation (14.98%, n=229), and independent test (15.04%, n=230) cohorts. ResNet-50, EfficientNet-B2, and ConvNeXt-Tiny architectures were fine-tuned using class-weighted Cross-Entropy loss and Automatic Mixed Precision. Model interpretability was evaluated using Gradient-weighted Class Activation Mapping (Grad-CAM).<br><br>
+    <strong>Methods:</strong> A clinical cohort of <strong>1,529 weight-bearing lateral foot radiographs</strong> (908 pes planus, 621 normal) was collected. We constructed an automated medical preprocessing pipeline featuring 16-bit to 8-bit dynamic percentile windowing, Contrast Limited Adaptive Histogram Equalization (CLAHE), proximal tibial-axis canonical orientation standardization (all feet facing right), and platform edge detection to crop the foot ROI while eliminating extraneous apparatus and radiographic "L"/"R" markers. The dataset was partitioned into stratified training (69.98%, n=1,070), validation (14.98%, n=229), and independent test (15.04%, n=230) cohorts. ResNet-50, EfficientNet-B2, and ConvNeXt-Tiny architectures were fine-tuned using class-weighted Cross-Entropy loss and Automatic Mixed Precision. Model interpretability was evaluated using Gradient-weighted Class Activation Mapping (Grad-CAM).<br><br>
     <strong>Results:</strong> On the independent test cohort (230 patients: 137 pes planus, 93 normal), <strong>EfficientNet-B2</strong> achieved an overall diagnostic accuracy of <strong>86.09%</strong>, an area under the ROC curve (<strong>ROC-AUC</strong>) of <strong>0.9222</strong>, a sensitivity of <strong>91.24%</strong>, a specificity of <strong>78.49%</strong>, and an F1-score of <strong>0.8865</strong>. <strong>ResNet-50</strong> achieved the highest sensitivity of <strong>94.89%</strong> (identifying 130 of 137 flatfoot cases) with 0.9134 AUC, while <strong>ConvNeXt-Tiny</strong> achieved <strong>94.16%</strong> sensitivity and 0.9152 AUC. Grad-CAM saliency heatmaps verified that all models selectively attended to the medial longitudinal arch, navicular-cuneiform joint, and calcaneal pitch angle without learning spurious background artifacts.<br><br>
     <strong>Conclusion:</strong> End-to-end deep learning classification provides an accurate, robust, and interpretable clinical alternative to heuristic landmark-based angle calculations, offering a real-time diagnostic screening baseline for orthopedic clinical workflows.
     <div class="keywords">
@@ -235,7 +333,7 @@ def generate_english_html(roc_b64: str, gradcam_b64: str) -> str:
 <p>
     In clinical orthopedic practice, definitive structural assessment is performed using standing, weight-bearing lateral foot radiographs. Under normal anatomical loading, physicians manually or semi-automatically evaluate two key geometric angles:
 </p>
-<p class="no-indent" style="margin-left: 20px;">
+<p class="no-indent" style="margin-left: 18px;">
     <strong>1. Meary’s Angle (Talar-1st Metatarsal Angle):</strong> The acute angle between the long axis of the talus and the first metatarsal shaft. Normal range is 0&deg; to 4&deg;; angles exceeding 4&deg; plantar deviation signify arch collapse.<br>
     <strong>2. Calcaneal Pitch Angle:</strong> The inclination angle between the inferior calcaneal cortical line and the horizontal weight-bearing platform. Normal values range from 17&deg; to 32&deg;; angles below 17&deg; confirm flatfoot.
 </p>
@@ -258,26 +356,50 @@ def generate_english_html(roc_b64: str, gradcam_b64: str) -> str:
 
 <h3>2.2 Automated Medical Preprocessing and ROI Extraction</h3>
 <p>
-    Raw radiographs exhibit wide variations in exposure, equipment borders, and limb laterality. We engineered an automated, deterministic preprocessing pipeline (`FootRadiographPreprocessor`):
+    Raw radiographs exhibit wide variations in exposure, equipment borders, and limb laterality. We engineered an automated, deterministic preprocessing pipeline (<em>FootRadiographPreprocessor</em>):
 </p>
 <p>
-    <em>1. Dynamic Percentile Windowing:</em> Radiographs were normalized from 16-bit ($0&ndash;65,535$) to 8-bit ($0&ndash;255$) by clipping intensities between the 1st ($P_1$) and 99th ($P_{{99}}$) percentiles:
+    <em>1. Dynamic Percentile Windowing:</em> Radiographs were normalized from 16-bit (intensity values 0&ndash;65,535) to 8-bit (0&ndash;255) by clipping intensities between the 1st (<em>P</em><sub>1</sub>) and 99th (<em>P</em><sub>99</sub>) percentiles:
 </p>
 <div class="equation-box">
-    $$I_{{8\text{{-bit}}}} = \text{{clip}}\left(\frac{{I_{{16\text{{-bit}}}} - P_1}}{{P_{{99}} - P_1 + 10^{{-6}}}}, 0, 1\right) \times 255$$
+    <div class="equation-content">{eq1_svg}</div>
+    <div class="equation-num">(1)</div>
 </div>
 <p>
-    <em>2. Contrast Enhancement (CLAHE):</em> Contrast Limited Adaptive Histogram Equalization (clip limit 2.0, $8 \times 8$ grid) was applied to sharpen trabecular bone textures, cortical contours, and articular margins.
+    <em>2. Contrast Enhancement (CLAHE):</em> Contrast Limited Adaptive Histogram Equalization (clip limit 2.0, 8 &times; 8 contextual grid) was applied to sharpen trabecular bone textures, cortical contours, and articular margins.
 </p>
 <p>
-    <em>3. Tibial-Axis Canonical Orientation Standardization:</em> Because lateral radiographs contain both left and right feet, toe direction varies. In weight-bearing projections, the tibia and fibula enter vertically into the ankle complex. By analyzing vertical column density in the upper third ($y \in [0.35H, 0.50H]$), the tibial shaft coordinate $X_{{\text{{tibia}}}}$ was localized. Images with $X_{{\text{{tibia}}}} > W/2$ (toes pointing left) were horizontally flipped to ensure 100% of the dataset exhibits a canonical right-facing orientation.
+    <em>3. Tibial-Axis Canonical Orientation Standardization:</em> Because lateral radiographs contain both left and right feet, toe direction varies. In weight-bearing projections, the tibia and fibula enter vertically into the ankle complex. By analyzing vertical column density in the upper shaft band <em>y</em> &isin; [0.35<em>H</em>, 0.50<em>H</em>], the horizontal coordinate <em>X</em><sub>tibia</sub> was determined:
+</p>
+<div class="equation-box">
+    <div class="equation-content">{eq2_svg}</div>
+    <div class="equation-num">(2)</div>
+</div>
+<p>
+    All images with <em>X</em><sub>tibia</sub> &gt; <em>W</em>/2 (toes pointing left) were horizontally mirrored, establishing 100% right-facing canonical orientation across the dataset:
+</p>
+<div class="equation-box">
+    <div class="equation-content">{eq3_svg}</div>
+    <div class="equation-num">(3)</div>
+</div>
+<p>
+    <em>4. Platform Edge Detection and Foot ROI Cropping:</em> A vertical Sobel gradient operator (<em>K</em><sub>y</sub>) localized the weight-bearing stand interface in the lower radiograph section:
+</p>
+<div class="equation-box">
+    <div class="equation-content">{eq4_svg}</div>
+    <div class="equation-num">(4)</div>
+</div>
+<p>
+    The foot anatomical complex was cropped immediately above <em>Y</em><sub>platform</sub>, systematically eliminating metal table structures below, upper tibial shafts above, and radiopaque orientation tags ("L"/"R").
 </p>
 <p>
-    <em>4. Platform Edge Detection and Foot ROI Cropping:</em> Horizontal Sobel filtering localized the weight-bearing stand interface. The foot region was cropped immediately above the platform, systematically eliminating table legs below, upper shin bones above, and radiopaque letter tags ("L"/"R").
+    <em>5. Dimension Standardization:</em> Cropped foot images were bilinearly resized to a uniform 512 &times; 512 resolution.
 </p>
-<p>
-    <em>5. Dimension Standardization:</em> Cropped foot images were bilinearly resized to a uniform $512 \times 512$ resolution.
-</p>
+
+<div class="figure-container-full">
+    {arch_svg}
+    <div class="caption">Figure 1: End-to-end methodology architecture of the proposed flatfoot deep learning framework, detailing 16-bit dynamic percentile windowing, CLAHE contrast enhancement, tibial-axis canonical orientation standardization, platform ROI extraction, deep feature backbone benchmarking, and Grad-CAM clinical explainability validation.</div>
+</div>
 
 <h3>2.3 Stratified Partitioning</h3>
 <p>
@@ -327,16 +449,32 @@ def generate_english_html(roc_b64: str, gradcam_b64: str) -> str:
 </table>
 <div class="caption">Table 1: Stratified dataset distribution across experimental partitions.</div>
 
-<h3>2.4 Deep Learning Architectures & Training</h3>
+<h3>2.4 Deep Learning Architectures & Training Protocol</h3>
 <p>
     We evaluated three benchmark deep convolutional architectures:
-    <strong>ResNet-50</strong> (residual learning standard),
+    <strong>ResNet-50</strong> (residual learning standard with bottleneck blocks),
     <strong>EfficientNet-B2</strong> (compound scaled MBConv with Squeeze-and-Excitation), and
-    <strong>ConvNeXt-Tiny</strong> (modern pure ConvNet with 7&times;7 depthwise kernels).
+    <strong>ConvNeXt-Tiny</strong> (modernized ConvNet with 7 &times; 7 depthwise kernels and inverted bottlenecks).
 </p>
 <p>
-    Models were trained using class-weighted Cross-Entropy Loss ($w_{{\text{{normal}}}} = 1.23$, $w_{{\text{{pes}}}} = 0.84$), AdamW optimizer ($\text{{LR}} = 10^{{-4}}$, weight decay $= 10^{{-2}}$), Cosine Annealing learning rate schedule over 20 epochs, and Automatic Mixed Precision (AMP / FP16) on an NVIDIA GeForce RTX 3050 Ti Laptop GPU. Data augmentation included rotation ($\pm 7^\circ$), translation ($\pm 4\%$), scale ($0.96&ndash;1.04\times$), and color jitter ($\pm 15\%$).
+    Models were trained using class-weighted Cross-Entropy loss (weights: <em>w</em><sub>normal</sub> = 1.231, <em>w</em><sub>pes_planus</sub> = 0.842) to adjust for cohort balance:
 </p>
+<div class="equation-box">
+    <div class="equation-content">{eq5_svg}</div>
+    <div class="equation-num">(5)</div>
+</div>
+<p>
+    Optimization was performed via AdamW (initial learning rate 10<sup>&minus;4</sup>, weight decay 10<sup>&minus;2</sup>), Cosine Annealing learning rate schedule over 20 epochs, batch size of 8, and Automatic Mixed Precision (AMP / FP16) on an NVIDIA GeForce RTX 3050 Ti Laptop GPU. Data augmentation included rotation (&plusmn;7&deg;), translation (&plusmn;4%), scale (0.96&ndash;1.04&times;), and color jitter (&plusmn;15%).
+</p>
+
+<h3>2.5 Visual Explainability Formulation</h3>
+<p>
+    To verify whether feature activations correspond to known orthopaedic criteria, Gradient-weighted Class Activation Mapping (Grad-CAM) was computed for class <em>c</em> across penultimate feature maps <em>A</em><sup>k</sup>:
+</p>
+<div class="equation-box">
+    <div class="equation-content">{eq6_svg}</div>
+    <div class="equation-num">(6)</div>
+</div>
 
 <h2>3. Results</h2>
 
@@ -405,17 +543,17 @@ def generate_english_html(roc_b64: str, gradcam_b64: str) -> str:
 
 <div class="figure-container">
     <img src="{roc_b64}" alt="ROC Comparison Curves">
-    <div class="caption">Figure 1: Comparative Receiver Operating Characteristic (ROC) curves on the independent test set (n=230) for ResNet-50, EfficientNet-B2, and ConvNeXt-Tiny.</div>
+    <div class="caption">Figure 2: Comparative Receiver Operating Characteristic (ROC) curves on the independent test set (n=230) for ResNet-50, EfficientNet-B2, and ConvNeXt-Tiny.</div>
 </div>
 
 <h3>3.2 Model Interpretability (Grad-CAM)</h3>
 <p>
-    To verify that models rely on true anatomical markers, Grad-CAM saliency maps were extracted across test samples (Figure 2). For flatfoot predictions, activations concentrated precisely along the collapsed medial longitudinal arch and navicular-cuneiform alignment. For normal feet, activations targeted the elevated arch gap and calcaneal pitch. Spurious regions (standing platform, background air, and edge borders) generated negligible activation.
+    To verify that models rely on true anatomical markers, Grad-CAM saliency maps were extracted across test samples (Figure 3). For flatfoot predictions, activations concentrated precisely along the collapsed medial longitudinal arch and navicular-cuneiform alignment. For normal feet, activations targeted the elevated arch gap and calcaneal pitch. Spurious regions (standing platform, background air, and edge borders) generated negligible activation.
 </p>
 
 <div class="figure-container">
     <img src="{gradcam_b64}" alt="Grad-CAM Saliency Maps">
-    <div class="caption">Figure 2: Grad-CAM anatomical saliency maps demonstrating model focus on the medial arch, navicular-cuneiform joint, and calcaneus.</div>
+    <div class="caption">Figure 3: Grad-CAM anatomical saliency maps demonstrating model focus on the medial longitudinal arch, navicular-cuneiform joint, and calcaneus pitch.</div>
 </div>
 
 <h2>4. Discussion & Conclusion</h2>
@@ -440,7 +578,33 @@ def generate_english_html(roc_b64: str, gradcam_b64: str) -> str:
 </html>"""
 
 
-def generate_turkish_html(roc_b64: str, gradcam_b64: str) -> str:
+def generate_turkish_html(roc_b64: str, gradcam_b64: str, arch_svg_tr: str) -> str:
+    # Compile clean SVG vector equations with raw LaTeX strings
+    eq1_svg = render_latex_svg(
+        r"$I_{\mathrm{8-bit}}(x, y) = \mathrm{clip}\left(\frac{I_{\mathrm{16-bit}}(x, y) - P_1}{P_{99} - P_1 + 10^{-6}},\, 0,\, 1\right) \times 255$",
+        fontsize=11.5, fig_width=6.6, fig_height=0.65
+    )
+    eq2_svg = render_latex_svg(
+        r"$\rho_{\mathrm{vert}}(x) = \sum_{y=0.35H}^{0.50H} I(x, y), \quad X_{\mathrm{tibia}} = \arg\max_{x} \left(\rho_{\mathrm{vert}} * G_{\sigma=15}\right)(x)$",
+        fontsize=11.5, fig_width=6.6, fig_height=0.65
+    )
+    eq3_svg = render_latex_svg(
+        r"$I_{\mathrm{hizalanmis}}(x, y) = I(W - 1 - x,\, y)\quad [X_{\mathrm{tibia}} > W/2\mathrm{\ ise}], \quad I(x,\, y)\quad [X_{\mathrm{tibia}} \leq W/2\mathrm{\ ise}]$",
+        fontsize=11.5, fig_width=6.8, fig_height=0.65
+    )
+    eq4_svg = render_latex_svg(
+        r"$Y_{\mathrm{basamak}} = \arg\max_{y \in [0.55H,\, 0.95H]} \sum_{x=0.2W}^{0.8W} |S_y(x, y)|, \quad S_y = I * K_y$",
+        fontsize=11.5, fig_width=6.6, fig_height=0.65
+    )
+    eq5_svg = render_latex_svg(
+        r"$\mathcal{L}_{\mathrm{CE}}(\theta) = -\frac{1}{B} \sum_{i=1}^B w_{y_i} \left[ y_i \log \hat{p}_i + (1 - y_i) \log(1 - \hat{p}_i) \right]$",
+        fontsize=11.5, fig_width=6.4, fig_height=0.65
+    )
+    eq6_svg = render_latex_svg(
+        r"$\alpha_k^c = \frac{1}{Z} \sum_{i=1}^U \sum_{j=1}^V \frac{\partial y^c}{\partial A_{i,j}^k}, \quad L_{\mathrm{Grad\text{-}CAM}}^c(i, j) = \mathrm{ReLU}\left( \sum_{k=1}^K \alpha_k^c A^k(i, j) \right)$",
+        fontsize=11.5, fig_width=6.8, fig_height=0.70
+    )
+
     return f"""<!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -451,7 +615,8 @@ def generate_turkish_html(roc_b64: str, gradcam_b64: str) -> str:
 <body>
 
 <div class="header-tag">
-    Akademik Arşiv Ön Basımı &bull; Biyomedikal Görüntüleme & Derin Öğrenme &bull; Ekim 2026
+    <span>Akademik Arşiv Ön Basımı &bull; Biyomedikal Görüntüleme & Derin Öğrenme</span>
+    <span>Ekim 2026</span>
 </div>
 
 <h1 class="title">
@@ -485,7 +650,7 @@ def generate_turkish_html(roc_b64: str, gradcam_b64: str) -> str:
 <p>
     Ortopedide düz taban teşhisinin temel dayanağı, hastanın ağırlığını taşıyarak çektirdiği yan ayak röntgenleridir (weight-bearing lateral radiograph). Uzmanlar bu grafilerden iki temel geometrik açıyı inceler:
 </p>
-<p class="no-indent" style="margin-left: 20px;">
+<p class="no-indent" style="margin-left: 18px;">
     <strong>1. Meary Açısı (Talus-1. Metatars Açısı):</strong> Talus boynu ekseni ile birinci metatars gövde ekseni arasındaki açıdır (Normal: 0&deg;&ndash;4&deg;; 4&deg;'den büyük plantar sapma düz taban göstergesidir).<br>
     <strong>2. Kalkaneal Pitch Açısı:</strong> Kalkaneus kemiği alt sınırı ile ayak tabanının bastığı zemin basamağı arasındaki açıdır (Normal: 17&deg;&ndash;32&deg;; 17&deg;'den küçük açı düz taban göstergesidir).
 </p>
@@ -500,27 +665,54 @@ def generate_turkish_html(roc_b64: str, gradcam_b64: str) -> str:
 
 <h3>2.1 Klinik Veri Seti ve Ön İşleme</h3>
 <p>
-    Çalışmada klinik PACS arşivinden elde edilen <strong>1.529 adet basarak çekilmiş yan ayak röntgeni</strong> (908 düz taban, 621 normal) kullanılmıştır. Geliştirilen otomatik medikal ön işleme algoritması (`FootRadiographPreprocessor`) şu aşamaları içerir:
+    Çalışmada klinik PACS arşivinden elde edilen <strong>1.529 adet basarak çekilmiş yan ayak röntgeni</strong> (908 düz taban, 621 normal) kullanılmıştır. Geliştirilen otomatik medikal ön işleme algoritması (<em>FootRadiographPreprocessor</em>) şu aşamaları içerir:
 </p>
 <p>
-    <em>1. Dinamik Aralık Pencereleme:</em> 16-bit radyografiler %1 ve %99 persentil sınırlarıyla 8-bit $[0, 255]$ aralığına çekilmiştir.
+    <em>1. Dinamik Aralık Pencereleme:</em> 16-bit radyografiler %1 ve %99 persentil sınırlarıyla (<em>P</em><sub>1</sub>, <em>P</em><sub>99</sub>) 8-bit [0, 255] aralığına çekilmiştir:
+</p>
+<div class="equation-box">
+    <div class="equation-content">{eq1_svg}</div>
+    <div class="equation-num">(1)</div>
+</div>
+<p>
+    <em>2. CLAHE Kontrast Artırımı:</em> Kemik trabeküllerini ve eklem aralıklarını belirginleştirmek için klip limiti 2.0 olan CLAHE uygulanmıştır (8 &times; 8 ızgara).
 </p>
 <p>
-    <em>2. CLAHE Kontrast Artırımı:</em> Kemik trabeküllerini ve eklem aralıklarını belirginleştirmek için klip limiti 2.0 olan CLAHE uygulanmıştır.
+    <em>3. Kaval Kemiği ile Kanonik Sağ Yönelim:</em> Kaval kemiği (tibia) dikey olarak ayak bileğine girmektedir. Görüntünün üst yarısındaki kolon yoğunluk profili analiz edilerek kaval kemiği ekseni tespit edilmiştir:
+</p>
+<div class="equation-box">
+    <div class="equation-content">{eq2_svg}</div>
+    <div class="equation-num">(2)</div>
+</div>
+<p>
+    <em>X</em><sub>tibia</sub> &gt; <em>W</em>/2 durumunda ayağın sola baktığı anlaşılmış ve tüm görseller parmaklar sağa bakacak şekilde çevrilerek %100 kanonik sağ yönelim sağlanmıştır:
+</p>
+<div class="equation-box">
+    <div class="equation-content">{eq3_svg}</div>
+    <div class="equation-num">(3)</div>
+</div>
+<p>
+    <em>4. Basamak Tespiti ve Ayak ROI Kırpma:</em> Dikey Sobel gradyan filtresiyle (<em>K</em><sub>y</sub>) hastanın bastığı zemin basamağı tespit edilmiştir:
+</p>
+<div class="equation-box">
+    <div class="equation-content">{eq4_svg}</div>
+    <div class="equation-num">(4)</div>
+</div>
+<p>
+    Basamağın altındaki metal aksam, üstteki bacak kemikleri ve köşelerdeki "L"/"R" harf etiketleri kesilerek sadece anatomik ayak kompleksi izole edilmiştir.
 </p>
 <p>
-    <em>3. Kaval Kemiği ile Kanonik Sağ Yönelim:</em> Kaval kemiği (tibia) dikey olarak ayak bileğine girmektedir. Görüntünün üst yarısındaki kolon yoğunluk profili analiz edilerek $X_{{\text{{tibia}}}} > W/2$ durumunda ayağın sola baktığı tespit edilmiş ve tüm görseller parmaklar sağa bakacak şekilde çevrilerek eşitlenmiştir.
+    <em>5. Boyut Standardizasyonu:</em> Kırpılan ayak bölgeleri 512 &times; 512 piksel standart boyuta getirilmiştir.
 </p>
-<p>
-    <em>4. Basamak Tespiti ve Ayak ROI Kırpma:</em> Yatay Sobel gradyan filtresiyle hastanın bastığı zemin tespit edilmiş; basamağın altındaki metal ayaklar, üstteki bacak kemikleri ve köşelerdeki "L"/"R" harf etiketleri kesilerek sadece ayak izole edilmiştir.
-</p>
-<p>
-    <em>5. Boyut Standardizasyonu:</em> Kırpılan ayak bölgeleri $512 \times 512$ piksel standart boyuta getirilmiştir.
-</p>
+
+<div class="figure-container-full">
+    {arch_svg_tr}
+    <div class="caption">Şekil 1: Önerilen uçtan uca düz taban derin öğrenme metodolojisinin mimari diyagramı; 16-bit dinamik pencereleme, CLAHE kontrast iyileştirme, kaval kemiği ekseniyle kanonik yönlendirme, basamak ve ROI kırpma, derin konvolüsyonel omurga eğitimi ve Grad-CAM klinik açıklanabilirlik aşamalarını göstermektedir.</div>
+</div>
 
 <h3>2.2 Katmanlı (Stratified) Veri Bölümleme</h3>
 <p>
-    Veri sızıntısını engellemek için veri seti katmanlı olarak ayrılmıştır: Eğitim (%69.98, n=1.070), Doğrulama (%14.98, n=229) ve Test (%15.04, n=230).
+    Veri sızıntısını engellemek için veri seti katmanlı olarak ayrılmıştır:
 </p>
 
 <table class="academic-table">
@@ -568,8 +760,24 @@ def generate_turkish_html(roc_b64: str, gradcam_b64: str) -> str:
 
 <h3>2.3 Derin Öğrenme Mimarileri ve Eğitim Protokolü</h3>
 <p>
-    Üç farklı konvolüsyonel mimari karşılaştırılmıştır: <strong>ResNet-50</strong>, <strong>EfficientNet-B2</strong> ve <strong>ConvNeXt-Tiny</strong>. Sınıf ağırlıklı Çapraz Entropi (Normal ağırlığı: 1.23, Düz Taban ağırlığı: 0.84), AdamW optimizasyonu ($\text{{LR}} = 10^{{-4}}$), Cosine Annealing zamanlayıcısı ve NVIDIA RTX 3050 Ti GPU üzerinde AMP (FP16) kullanılmıştır.
+    Üç farklı konvolüsyonel mimari karşılaştırılmıştır: <strong>ResNet-50</strong>, <strong>EfficientNet-B2</strong> ve <strong>ConvNeXt-Tiny</strong>. Sınıf dengesizliğini telafi etmek için ağırlıklı Çapraz Entropi (Cross-Entropy) kaybı uygulanmıştır:
 </p>
+<div class="equation-box">
+    <div class="equation-content">{eq5_svg}</div>
+    <div class="equation-num">(5)</div>
+</div>
+<p>
+    Eğitim AdamW optimizer (öğrenme oranı 10<sup>&minus;4</sup>, ağırlık azalımı 10<sup>&minus;2</sup>), Cosine Annealing zamanlayıcısı ve NVIDIA RTX 3050 Ti GPU üzerinde AMP (FP16) ile 20 epok boyunca yürütülmüştür.
+</p>
+
+<h3>2.4 Açıklanabilir Yapay Zeka (XAI)</h3>
+<p>
+    Ağ kararlarının klinik geçerliliğini doğrulamak için Grad-CAM sınıf aktivasyon haritaları hesaplanmıştır:
+</p>
+<div class="equation-box">
+    <div class="equation-content">{eq6_svg}</div>
+    <div class="equation-num">(6)</div>
+</div>
 
 <h2>3. Deneysel Bulgular ve Sonuçlar</h2>
 
@@ -637,28 +845,28 @@ def generate_turkish_html(roc_b64: str, gradcam_b64: str) -> str:
 
 <div class="figure-container">
     <img src="{roc_b64}" alt="ROC Eğrileri">
-    <div class="caption">Şekil 1: Bağımsız test setinde (n=230) ResNet-50, EfficientNet-B2 ve ConvNeXt-Tiny ROC eğrileri karşılaştırması.</div>
+    <div class="caption">Şekil 2: Bağımsız test setinde (n=230) ResNet-50, EfficientNet-B2 ve ConvNeXt-Tiny ROC eğrileri karşılaştırması.</div>
 </div>
 
 <h3>3.2 Grad-CAM Anatomik Açıklanabilirlik</h3>
 <p>
-    Grad-CAM analizinde modellerin karar verirken medial boylamsal arkın çökmesine (naviküler-kuneiform kemik hattı), kalkaneus açısına ve subtalar eklem aralığına odaklandığı; basamağın metal hatlarına veya arka plana sıfır aktivasyon verdiği doğrulanmıştır.
+    Grad-CAM analizinde modellerin karar verirken medial boylamsal arkın çökmesine (naviküler-kuneiform kemik hattı), kalkaneus açısına ve subtalar eklem aralığına odaklandığı; basamağın metal hatlarına veya arka plana sıfır aktivasyon verdiği doğrulanmıştır (Şekil 3).
 </p>
 
 <div class="figure-container">
     <img src="{gradcam_b64}" alt="Grad-CAM Haritaları">
-    <div class="caption">Şekil 2: Grad-CAM anatomik ısı haritaları ile model kararlarının klinik geçerliliğinin doğrulanması.</div>
+    <div class="caption">Şekil 3: Grad-CAM anatomik ısı haritaları ile model kararlarının klinik geçerliliğinin doğrulanması.</div>
 </div>
 
 <h2>4. Tartışma ve Sonuç</h2>
 <p>
-    Elde edilen <strong>0.9222 ROC-AUC</strong> ve <strong>%94.89 hassasiyet</strong> değerleri, geometrik açı tespiti yöntemlerine gerek kalmadan doğrudan radyografik sınıflandırmanın klinik taramalar için güvenilir bir alternatif olduğunu kanıtlamaktadır. Görsel başına <strong>~30-35 milisaniyelik</strong> çıkarım süresi, sistemin hastane iş istasyonlarına entegre edilebilirliğini göstermektedir.
+    Elde edilen bulgular, doğrudan radyografik derin öğrenme sınıflandırmasının nirengi sapmalarından kaynaklanan açı hatalarını ve etiketleme darboğazını ortadan kaldırdığını göstermektedir. <strong>0.9222 ROC-AUC</strong> ve <strong>%94.89 klinik duyarlılık</strong> ile bu yaklaşım ortopedi kliniklerinde hızlı (35 ms/grafi) ve güvenilir bir tarama mekanizması sağlamaktadır.
 </p>
 <p>
-    <strong>Gelecek Çalışmalar:</strong> Bu benchmark sonuçları referans alınarak, ayak kemiklerinin boylamsal kavis morfolojisine ve eklem aralıklarına odaklanan anatomik dikkat (attention) mekanizmalı özgün <em>FootArchNet</em> mimarisinin geliştirilmesi hedeflenmektedir.
+    <strong>Gelecek Çalışmalar:</strong> Bu çalışma ileride geliştirilecek <em>FootArchNet</em> mimarisi için temel oluşturmakta olup, çok ölçekli dikkat mekanizmaları ile ara ark vakalarındaki özgüllüğü daha da yukarı taşımayı amaçlamaktadır.
 </p>
 
-<h2>Kaynakça</h2>
+<h2>Kaynaklar</h2>
 <ol class="ref-list">
     <li>Noh, W. J., Lee, M. S., & Lee, B. D. (2024). Deep learning-based automated angle measurement for flatfoot diagnosis in weight-bearing lateral radiographs. <em>Scientific Reports</em>, 14(1), 18411.</li>
     <li>Khaleghizadeh, R., Motamed, S., & Askari, E. (2025). Flatfoot disorder recognition based on the YOLO-ChA algorithm. <em>Biomedical Signal Processing and Control</em>, 97, 106560.</li>
@@ -672,64 +880,74 @@ def generate_turkish_html(roc_b64: str, gradcam_b64: str) -> str:
 </html>"""
 
 
-def main():
-    papers_dir = PROJECT_ROOT / "papers"
-    papers_dir.mkdir(parents=True, exist_ok=True)
-
-    roc_path = PROJECT_ROOT / "experiments" / "benchmark_roc_comparison.png"
-    gradcam_path = PROJECT_ROOT / "experiments" / "run_efficientnet_b2_512px" / "gradcam_test_samples.png"
-
-    print("Encoding figures to Base64 for zero-dependency self-contained documents...")
-    roc_b64 = img_to_base64(roc_path)
-    gradcam_b64 = img_to_base64(gradcam_path)
-
-    # 1. English Paper HTML
-    html_en = generate_english_html(roc_b64, gradcam_b64)
-    html_en_path = papers_dir / "paper_en.html"
-    with open(html_en_path, "w", encoding="utf-8") as f:
-        f.write(html_en)
-    print(f"Generated {html_en_path}")
-
-    # 2. Turkish Paper HTML
-    html_tr = generate_turkish_html(roc_b64, gradcam_b64)
-    html_tr_path = papers_dir / "paper_tr.html"
-    with open(html_tr_path, "w", encoding="utf-8") as f:
-        f.write(html_tr)
-    print(f"Generated {html_tr_path}")
-
-    # 3. Compile PDFs via headless Edge browser
+def compile_pdf(html_path: Path, pdf_path: Path):
     edge_paths = [
         r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
         r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
-        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
     ]
-    browser_exe = next((p for p in edge_paths if os.path.exists(p)), None)
-    if not browser_exe:
-        print("Error: No Chromium/Edge browser found for PDF compilation.")
-        return
+    edge_path = next((p for p in edge_paths if os.path.exists(p)), None)
+    if not edge_path:
+        raise RuntimeError("Microsoft Edge not found for headless PDF generation.")
 
-    print(f"Using PDF renderer: {browser_exe}")
+    print(f"Using PDF renderer: {edge_path}")
+    print(f"Compiling PDF: {pdf_path.name}...")
+    cmd = [
+        edge_path,
+        "--headless=new",
+        "--disable-gpu",
+        f"--print-to-pdf={pdf_path.resolve()}",
+        f"file:///{html_path.resolve().as_posix()}",
+    ]
+    res = subprocess.run(cmd, capture_output=True, text=True)
+    if res.returncode != 0:
+        print(f"Renderer stderr: {res.stderr}")
+        raise RuntimeError(f"Failed to generate {pdf_path.name}")
+    print(f"  --> Successfully generated {pdf_path.name} ({pdf_path.stat().st_size / 1024:.1f} KB)")
+
+
+def main():
+    papers_dir = PROJECT_ROOT / "papers"
+    experiments_dir = PROJECT_ROOT / "experiments"
+
+    roc_path = experiments_dir / "benchmark_roc_comparison.png"
+    gradcam_path = experiments_dir / "run_efficientnet_b2_512px" / "gradcam_test_samples.png"
+    arch_svg_en_path = papers_dir / "methodology_architecture_en.svg"
+    arch_svg_tr_path = papers_dir / "methodology_architecture_tr.svg"
+
+    # Ensure SVG architecture diagrams exist
+    from scripts.generate_architecture_diagram import create_architecture_svg
+    create_architecture_svg(arch_svg_en_path, "en")
+    create_architecture_svg(arch_svg_tr_path, "tr")
+
+    print("Encoding figures & SVGs for zero-dependency self-contained documents...")
+    roc_b64 = img_to_base64(roc_path)
+    gradcam_b64 = img_to_base64(gradcam_path)
+    arch_svg_en = arch_svg_en_path.read_text(encoding="utf-8")
+    arch_svg_tr = arch_svg_tr_path.read_text(encoding="utf-8")
+
+    # Strip XML declaration if present
+    if "<?xml" in arch_svg_en:
+        arch_svg_en = arch_svg_en[arch_svg_en.find("<svg"):]
+    if "<?xml" in arch_svg_tr:
+        arch_svg_tr = arch_svg_tr[arch_svg_tr.find("<svg"):]
+
+    html_en = generate_english_html(roc_b64, gradcam_b64, arch_svg_en)
+    p_html_en = papers_dir / "paper_en.html"
+    p_html_en.write_text(html_en, encoding="utf-8")
+    print(f"Generated {p_html_en}")
+
+    html_tr = generate_turkish_html(roc_b64, gradcam_b64, arch_svg_tr)
+    p_html_tr = papers_dir / "paper_tr.html"
+    p_html_tr.write_text(html_tr, encoding="utf-8")
+    print(f"Generated {p_html_tr}")
 
     pdf_en = papers_dir / "Flatfoot_DeepLearning_Classification_Paper_EN.pdf"
+    compile_pdf(p_html_en, pdf_en)
+
     pdf_tr = papers_dir / "Duz_Taban_Derin_Ogrenme_Siniflandirma_Makale_TR.pdf"
+    compile_pdf(p_html_tr, pdf_tr)
 
-    for html_file, pdf_file in [(html_en_path, pdf_en), (html_tr_path, pdf_tr)]:
-        print(f"Compiling PDF: {pdf_file.name}...")
-        cmd = [
-            browser_exe,
-            "--headless=new",
-            "--disable-gpu",
-            "--no-pdf-header-footer",
-            f"--print-to-pdf={str(pdf_file)}",
-            str(html_file),
-        ]
-        res = subprocess.run(cmd, capture_output=True)
-        if pdf_file.exists() and pdf_file.stat().st_size > 1000:
-            print(f"  --> Successfully generated {pdf_file.name} ({pdf_file.stat().st_size / 1024:.1f} KB)")
-        else:
-            print(f"  --> Error compiling {pdf_file.name}: {res.stderr.decode('utf-8', errors='replace')}")
-
-    print("\nAll academic archive PDFs compiled successfully!")
+    print("\nAll academic archive PDFs compiled successfully with vector math & architecture diagrams!")
 
 
 if __name__ == "__main__":
