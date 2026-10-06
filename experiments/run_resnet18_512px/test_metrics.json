@@ -1,0 +1,14 @@
+{
+    "accuracy": 0.8261,
+    "sensitivity": 0.8759,
+    "specificity": 0.7527,
+    "precision": 0.8392,
+    "npv": 0.8046,
+    "f1_score": 0.8571,
+    "roc_auc": 0.9144,
+    "tp": 120,
+    "fp": 23,
+    "tn": 70,
+    "fn": 17,
+    "test_loss": 0.3703
+}

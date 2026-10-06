@@ -1,0 +1,22 @@
+{
+    "total": 1529,
+    "seed": 42,
+    "train": {
+        "count": 1070,
+        "pes_planus": 635,
+        "normal": 435,
+        "percentage": 69.98
+    },
+    "val": {
+        "count": 229,
+        "pes_planus": 136,
+        "normal": 93,
+        "percentage": 14.98
+    },
+    "test": {
+        "count": 230,
+        "pes_planus": 137,
+        "normal": 93,
+        "percentage": 15.04
+    }
+}
