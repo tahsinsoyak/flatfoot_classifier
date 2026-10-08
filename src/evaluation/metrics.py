@@ -13,6 +13,8 @@ from sklearn.metrics import (
     confusion_matrix,
     roc_curve,
 )
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 
