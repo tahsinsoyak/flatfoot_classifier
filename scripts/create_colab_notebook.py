@@ -73,45 +73,26 @@ else:
 """)
 
     # Cell 2: Setup code repository
-    add_markdown("## 2. Codebase Setup\nLoad project source code (`src/` and `scripts/`).")
+    add_markdown("## 2. Codebase Setup\nClone the official public repository from GitHub.")
     add_code("""import os
 import sys
-import zipfile
 from pathlib import Path
 
-# Check if src already exists
-if not os.path.exists("src/models/model_factory.py"):
-    # Look for flatfoot_code.zip in current dir or Google Drive
-    code_zip_candidates = [
-        Path("/content/flatfoot_code.zip"),
-        Path("/content/drive/MyDrive/flatfoot_code.zip"),
-        Path("flatfoot_code.zip")
-    ]
-    code_zip_found = next((p for p in code_zip_candidates if p.exists()), None)
-    
-    if code_zip_found:
-        print(f"✓ Found code archive at {code_zip_found}. Extracting...")
-        with zipfile.ZipFile(code_zip_found, 'r') as zf:
-            zf.extractall(".")
-        print("✓ Code extracted successfully!")
-    else:
-        # Try cloning GitHub repo
-        print("Cloning flatfoot_classifier repository from GitHub...")
-        !git clone https://github.com/tahsinsoyak/flatfoot_classifier.git
-        if os.path.exists("flatfoot_classifier"):
-            %cd flatfoot_classifier
-        else:
-            print("⚠️ Git clone failed (repo is private).")
-            print("👉 ÇÖZÜM: Masaüstünüzdeki 'flatfoot_code.zip' (76 KB) dosyasını sol taraftaki Colab panelinde /content içine sürükleyin ve bu hücreyi tekrar çalıştırın!")
+# Clean previous clones if needed and clone repository
+if not os.path.exists("/content/flatfoot_classifier"):
+    print("Cloning flatfoot_classifier repository from GitHub...")
+    !git clone https://github.com/tahsinsoyak/flatfoot_classifier.git
+else:
+    print("Repository already cloned. Pulling latest updates...")
+    !cd /content/flatfoot_classifier && git pull
 
-repo_root = Path(".").resolve()
+%cd /content/flatfoot_classifier
+
+repo_root = Path("/content/flatfoot_classifier").resolve()
 if str(repo_root) not in sys.path:
     sys.path.insert(0, str(repo_root))
 
-if os.path.exists("src"):
-    print(f"✓ Project root active at: {repo_root} (src modülü başarıyla yüklendi!)")
-else:
-    print("❌ 'src' klasörü henüz bulunamadı. Lütfen 'flatfoot_code.zip' dosyasını Colab'e yükleyin.")
+print(f"✓ Project root active at: {repo_root}")
 """)
 
     # Cell 3: Dependencies
