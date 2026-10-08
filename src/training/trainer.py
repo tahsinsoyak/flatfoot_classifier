@@ -30,6 +30,8 @@ class Trainer:
         checkpoint_dir: Path | str = "experiments/checkpoints",
         use_amp: bool = True,
         early_stopping_patience: int = 10,
+        use_ema: bool = True,
+        ema_decay: float = 0.999,
     ) -> None:
         self.model = model.to(device)
         self.train_loader = train_loader
@@ -41,8 +43,19 @@ class Trainer:
         self.checkpoint_dir = Path(checkpoint_dir)
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
         self.use_amp = use_amp and (device.type == "cuda")
-        self.scaler = torch.cuda.amp.GradScaler(enabled=self.use_amp)
+        self.scaler = torch.amp.GradScaler('cuda', enabled=self.use_amp)
         self.early_stopping_patience = early_stopping_patience
+        self.use_ema = use_ema
+        self.ema_decay = ema_decay
+
+        if self.use_ema:
+            from copy import deepcopy
+            self.ema_model = deepcopy(self.model).to(device)
+            self.ema_model.eval()
+            for p in self.ema_model.parameters():
+                p.requires_grad = False
+        else:
+            self.ema_model = None
 
         self.history = []
         self.best_metric = -1.0
@@ -67,6 +80,11 @@ class Trainer:
             self.scaler.step(self.optimizer)
             self.scaler.update()
 
+            if self.use_ema and self.ema_model is not None:
+                with torch.no_grad():
+                    for ema_p, model_p in zip(self.ema_model.parameters(), self.model.parameters()):
+                        ema_p.data.mul_(self.ema_decay).add_(model_p.data, alpha=1.0 - self.ema_decay)
+
             total_loss += loss.item() * images.size(0)
 
             probs = torch.softmax(outputs, dim=1)[:, 1].detach().cpu().numpy()
@@ -83,8 +101,9 @@ class Trainer:
         return avg_loss, metrics
 
     @torch.no_grad()
-    def evaluate(self, loader: DataLoader) -> Tuple[float, Dict[str, float], np.ndarray, np.ndarray, np.ndarray]:
-        self.model.eval()
+    def evaluate(self, loader: DataLoader, use_ema: bool = True) -> Tuple[float, Dict[str, float], np.ndarray, np.ndarray, np.ndarray]:
+        eval_model = self.ema_model if (self.use_ema and use_ema and self.ema_model is not None) else self.model
+        eval_model.eval()
         total_loss = 0.0
         y_true_list, y_pred_list, y_prob_list = [], [], []
 
@@ -93,7 +112,7 @@ class Trainer:
             labels = labels.to(self.device, non_blocking=True)
 
             with torch.amp.autocast('cuda', enabled=self.use_amp):
-                outputs = self.model(images)
+                outputs = eval_model(images)
                 loss = self.criterion(outputs, labels)
 
             total_loss += loss.item() * images.size(0)
@@ -159,9 +178,12 @@ class Trainer:
                 self.best_epoch = epoch
                 patience_counter = 0
                 best_path = self.checkpoint_dir / "best_model.pt"
+                saved_state_dict = (
+                    self.ema_model.state_dict() if (self.use_ema and self.ema_model is not None) else self.model.state_dict()
+                )
                 torch.save({
                     "epoch": epoch,
-                    "model_state_dict": self.model.state_dict(),
+                    "model_state_dict": saved_state_dict,
                     "optimizer_state_dict": self.optimizer.state_dict(),
                     "val_metrics": val_metrics,
                 }, best_path)

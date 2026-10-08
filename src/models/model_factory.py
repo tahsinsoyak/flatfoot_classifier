@@ -112,10 +112,19 @@ def create_model(
             dropout=dropout,
         )
 
+    elif model_name in ["swin_t", "swin_tiny", "swin"]:
+        weights = models.Swin_T_Weights.DEFAULT if pretrained else None
+        model = models.swin_t(weights=weights)
+        in_features = model.head.in_features
+        model.head = nn.Sequential(
+            nn.Dropout(p=dropout),
+            nn.Linear(in_features, num_classes),
+        )
+
     else:
         raise ValueError(
             f"Unsupported model_name: {model_name}. "
-            "Supported: foot_arch_net_ultra, foot_arch_net_v2, foot_arch_net, resnet50, resnet18, efficientnet_b2, efficientnet_b0, convnext_tiny, densenet121, densenet201"
+            "Supported: foot_arch_net_ultra, foot_arch_net_v2, foot_arch_net, swin_t, densenet201, densenet121, resnet50, convnext_tiny, efficientnet_b2"
         )
 
     return model

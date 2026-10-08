@@ -47,6 +47,8 @@ def get_target_layer_for_gradcam(model_name: str, model: nn.Module) -> nn.Module
         return model.features[-1]
     elif "densenet" in model_name:
         return list(model.features.denseblock4.children())[-1].conv2
+    elif "swin" in model_name:
+        return model.norm
     else:
         # Default fallback to last module before fc
         return list(model.children())[-2]
@@ -63,6 +65,8 @@ def main():
     parser.add_argument("--weight-decay", type=float, default=1e-2, help="Weight decay")
     parser.add_argument("--dropout", type=float, default=0.2, help="Dropout rate")
     parser.add_argument("--label-smoothing", type=float, default=0.05, help="Label smoothing epsilon")
+    parser.add_argument("--use-ema", action="store_true", default=True, help="Enable Model EMA")
+    parser.add_argument("--no-ema", action="store_false", dest="use_ema", help="Disable Model EMA")
     parser.add_argument("--device", type=str, default="auto", help="Device (cuda or cpu or auto)")
     parser.add_argument("--num-workers", type=int, default=2, help="Data loader workers")
     args = parser.parse_args()
@@ -163,6 +167,7 @@ def main():
         checkpoint_dir=exp_dir,
         use_amp=(device.type == "cuda"),
         early_stopping_patience=8,
+        use_ema=args.use_ema,
     )
 
     # Fit

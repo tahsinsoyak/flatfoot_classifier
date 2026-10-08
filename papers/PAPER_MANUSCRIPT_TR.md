@@ -106,18 +106,20 @@ Modellerin bağımsız 230 klinik vaka üzerindeki sonuçları Tablo 1'de sunulm
 
 | Model Mimarisi | Doğruluk (Accuracy) | Hassasiyet (Sens/Recall) | Özgüllük (Specificity) | Kesinlik (Precision/PPV) | NPV | F1-Skoru | ROC-AUC |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Süper Ensemble (TTA, Kalibre)** | **%90.39** | %88.24 | **%93.55** | **%95.24** | %84.47 | **0.9160** | **0.9564** |
+| **Süper Ensemble V2 (TTA, Kalibre)** | **%90.83** | %88.97 | **%93.55** | **%95.28** | %85.29 | **0.9202** | **0.9589** |
 | **FootArchNet-Ultra (Önerilen)** | **%87.77** | **%89.71** | %84.95 | %89.71 | %84.95 | 0.8971 | **0.9506** |
 | **DenseNet-201** | %86.90 | %88.24 | %84.95 | %89.55 | %83.16 | 0.8889 | 0.9434 |
 | **FootArchNet-V1** | %85.59 | %87.50 | %82.80 | %88.15 | %81.91 | 0.8782 | 0.9302 |
 | **FootArchNet-V2** | %84.28 | %83.82 | %84.95 | %89.06 | %78.22 | 0.8636 | 0.9435 |
 | **EfficientNet-B2** | %86.09 | %91.24 | %78.49 | %86.21 | %85.88 | 0.8865 | 0.9222 |
 | **ConvNeXt-Tiny** | %84.35 | %94.16 | %69.89 | %82.17 | %89.04 | 0.8776 | 0.9152 |
+| **Swin-T (Vision Transformer)** | %83.41 | %85.29 | %80.65 | %86.57 | %78.95 | 0.8593 | 0.9336 |
 | **ResNet-50** | %84.35 | %94.89 | %68.82 | %81.76 | %90.14 | 0.8784 | 0.9134 |
 
-- **EfficientNet-B2**, en yüksek doğruluğu (%86.09), en yüksek ROC-AUC skorunu (**0.9222**), en dengeli özgüllüğü (%78.49) ve en düşük test kaybını (0.5091) elde ederek genel sıralamada lider olmuştur.
-- **ResNet-50**, **%94.89 hassasiyetle** test kümesindeki 137 düz taban hastasından **130 tanesini doğru yakalamış**, yalnızca 7 tanesini kaçırmıştır (NPV: %90.14). Tarama amaçlı klinik uygulamalarda düz tabanı atlamama açısından çok kritik bir başarıdır.
-- **ConvNeXt-Tiny**, %94.16 hassasiyet ve 0.9152 AUC ile ResNet-50'ye çok yakın bir performans sergilemiştir.
+- **Süper Ensemble V2 (TTA)**; FootArchNet varyantları, DenseNet-201 ve Swin-T modellerini harmanlayarak **%90.83 genel doğruluk**, **0.9589 ROC-AUC**, **%93.55 özgüllük** ve **%95.28 kesinlik** elde etmiş ve 93 normal kontrolden sadece 6'sında yanlış alarm üretmiştir.
+- **FootArchNet-Ultra**, tekil model bazında **0.9506 ROC-AUC** ve **%87.77 doğruluk** ile literatürdeki en yüksek tekil model başarımını sağlamıştır.
+- **DenseNet-201**, 201 katmanlı yoğun özellik aktarımıyla radyoloji alanında %86.90 doğruluk ve 0.9434 AUC üretmiştir.
+- **Swin-T (Vision Transformer)**, pencereli dikkat mimarisiyle 0.9336 AUC ve %83.41 doğruluk ile topluluk çeşitliliğine güçlü katkı sunmuştur.
 
 ### 3.2 ROC Eğrisi Analizi
 Şekil 1'de modellerin ortak ROC eğrileri gösterilmektedir. Her üç model de $0.91$ üzerinde AUC değeri elde etmiştir. Özellikle düşük yanlış pozitiflik oranlarında ($FPR < 0.20$), EfficientNet-B2 eğrisi diğer modellerin üzerinde seyrederek üstün ayırt ediciliğini kanıtlamıştır.

@@ -11,6 +11,7 @@ Evaluation of standard radiology architectures vs. dedicated FootArchNet archite
 | FootArchNet-V1 | 85.59% | 87.50% | 82.80% | 88.15% | 81.91% | 87.82% | 0.9302 |
 | **FootArchNet-V2** | 84.28% | 83.82% | 84.95% | 89.06% | 78.22% | 86.36% | 0.9435 |
 | **FootArchNet-Ultra** | 87.77% | 89.71% | 84.95% | 89.71% | 84.95% | 89.71% | 0.9506 |
-| **Super Ensemble (TTA, Calibrated)** | 90.39% | 88.24% | 93.55% | 95.24% | 84.47% | 91.60% | 0.9564 |
+| Swin-T (Vision Transformer) | 83.41% | 85.29% | 80.65% | 86.57% | 78.95% | 85.93% | 0.9336 |
+| **Super Ensemble V2 (TTA, Calibrated)** | 90.83% | 88.97% | 93.55% | 95.28% | 85.29% | 92.02% | 0.9589 |
 
 *All models evaluated on the standardized letterbox test cohort (136 pes planus, 93 normal controls).* 

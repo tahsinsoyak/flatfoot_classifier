@@ -23,7 +23,8 @@ def main():
         ("foot_arch_net", "run_foot_arch_net_512px", "FootArchNet-V1", "test_metrics.json", "prob_pes_planus"),
         ("foot_arch_net_v2", "run_foot_arch_net_v2_512px", "FootArchNet-V2", "test_metrics.json", "prob_pes_planus"),
         ("foot_arch_net_ultra", "run_foot_arch_net_ultra_512px", "FootArchNet-Ultra", "test_metrics.json", "prob_pes_planus"),
-        ("super_ensemble", "run_super_ensemble_tta", "Super Ensemble (TTA, Calibrated)", "test_metrics.json", "prob_super_ensemble"),
+        ("swin_t", "run_swin_t_512px", "Swin-T (Vision Transformer)", "test_metrics.json", "prob_pes_planus"),
+        ("super_ensemble", "run_super_ensemble_tta", "Super Ensemble V2 (TTA, Calibrated)", "test_metrics.json", "prob_super_ensemble"),
     ]
 
     results = []
@@ -87,6 +88,7 @@ def main():
         "foot_arch_net": ("#059669", "--", 2.2),
         "foot_arch_net_v2": ("#7c3aed", "-", 2.5),
         "foot_arch_net_ultra": ("#2563eb", "-", 2.8),
+        "swin_t": ("#0d9488", ":", 2.2),
         "super_ensemble": ("#dc2626", "-", 3.5),
     }
 

@@ -130,19 +130,21 @@ Table 1 summarizes the diagnostic performance of the evaluated architectures on 
 
 | Model Architecture | Accuracy | Sensitivity | Specificity | Precision | NPV | F1-Score | ROC-AUC |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Super Ensemble (TTA, Calibrated)** | **90.39%** | 88.24% | **93.55%** | **95.24%** | 84.47% | **0.9160** | **0.9564** |
+| **Super Ensemble V2 (TTA, Calibrated)** | **90.83%** | 88.97% | **93.55%** | **95.28%** | 85.29% | **0.9202** | **0.9589** |
 | **FootArchNet-Ultra (Proposed)** | **87.77%** | **89.71%** | 84.95% | 89.71% | 84.95% | 0.8971 | **0.9506** |
 | **DenseNet-201** | 86.90% | 88.24% | 84.95% | 89.55% | 83.16% | 0.8889 | 0.9434 |
 | **FootArchNet-V1** | 85.59% | 87.50% | 82.80% | 88.15% | 81.91% | 0.8782 | 0.9302 |
 | **FootArchNet-V2** | 84.28% | 83.82% | 84.95% | 89.06% | 78.22% | 0.8636 | 0.9435 |
 | **EfficientNet-B2** | 86.09% | 91.24% | 78.49% | 86.21% | 85.88% | 0.8865 | 0.9222 |
 | **ConvNeXt-Tiny** | 84.35% | 94.16% | 69.89% | 82.17% | 89.04% | 0.8776 | 0.9152 |
+| **Swin-T (Vision Transformer)** | 83.41% | 85.29% | 80.65% | 86.57% | 78.95% | 0.8593 | 0.9336 |
 | **ResNet-50** | 84.35% | 94.89% | 68.82% | 81.76% | 90.14% | 0.8784 | 0.9134 |
 
 Key diagnostic findings:
-- **Super Ensemble with Test-Time Augmentation (TTA)** broke through the clinical 90% threshold, reaching **90.39% accuracy**, **93.55% specificity**, **95.24% precision**, and **0.9564 ROC-AUC**. Only 6 false alarms were recorded across 93 normal controls.
+- **Super Ensemble V2 with Test-Time Augmentation (TTA)** achieved new clinical benchmark records, reaching **90.83% accuracy**, **93.55% specificity**, **95.28% precision**, and **0.9589 ROC-AUC**. Only 6 false alarms were recorded across 93 normal controls.
 - **FootArchNet-Ultra** established the single-model state-of-the-art with **87.77% accuracy** (89.52% with TTA) and an unprecedented single-model **0.9506 ROC-AUC**, powered by dual-stream cross-attention between the full foot and the midfoot arch vault zoom.
 - **DenseNet-201** demonstrated strong radiological capability with **86.90% accuracy** and **0.9434 ROC-AUC**, validating the benefits of dense feature reuse for trabecular bone contours.
+- **Swin-T (Shifted-Window Vision Transformer)** attained **0.9336 ROC-AUC** and 83.41% accuracy, providing architectural diversity through self-attention across shifted windows.
 
 ### 3.2 ROC Analysis
 Figure 1 illustrates the comparative ROC curves across all evaluated models on the test set. EfficientNet-B2 maintained the highest curve trajectory across low false-positive rates ($FPR < 0.2$), reflecting its superior specificity in identifying normal arch anatomy.

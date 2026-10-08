@@ -505,14 +505,14 @@ def generate_english_html(roc_b64: str, gradcam_b64: str, arch_svg: str) -> str:
     </thead>
     <tbody>
         <tr>
-            <td><strong>Super Ensemble (TTA, Calibrated)</strong></td>
-            <td><strong>90.39%</strong></td>
-            <td>88.24%</td>
+            <td><strong>Super Ensemble V2 (TTA, Calibrated)</strong></td>
+            <td><strong>90.83%</strong></td>
+            <td>88.97%</td>
             <td><strong>93.55%</strong></td>
-            <td><strong>95.24%</strong></td>
-            <td>84.47%</td>
-            <td><strong>0.9160</strong></td>
-            <td><strong>0.9564</strong></td>
+            <td><strong>95.28%</strong></td>
+            <td>85.29%</td>
+            <td><strong>0.9202</strong></td>
+            <td><strong>0.9589</strong></td>
             <td>N/A</td>
         </tr>
         <tr>
@@ -582,6 +582,17 @@ def generate_english_html(roc_b64: str, gradcam_b64: str, arch_svg: str) -> str:
             <td>0.8875</td>
         </tr>
         <tr>
+            <td><strong>Swin-T (Vision Transformer)</strong></td>
+            <td>83.41%</td>
+            <td>85.29%</td>
+            <td>80.65%</td>
+            <td>86.57%</td>
+            <td>78.95%</td>
+            <td>0.8593</td>
+            <td>0.9336</td>
+            <td>0.3965</td>
+        </tr>
+        <tr>
             <td><strong>ResNet-50</strong></td>
             <td>84.35%</td>
             <td><strong>94.89%</strong></td>
@@ -597,14 +608,13 @@ def generate_english_html(roc_b64: str, gradcam_b64: str, arch_svg: str) -> str:
 <div class="caption">Table 2: Diagnostic performance comparison on the independent clinical test set (n=229).</div>
 
 <p>
-    The proposed <strong>FootArchNet-Ultra</strong> with dual-stream cross-attention processing established a single-model record area under the curve of <strong>0.9506 ROC-AUC</strong> with an exceptional diagnostic accuracy of <strong>87.77%</strong> (89.52% with TTA).
-    Furthermore, combining the models into the multi-scale <strong>Super Ensemble (TTA)</strong> surpassed the clinical 90% benchmark: <strong>90.39% diagnostic accuracy</strong>, <strong>0.9564 ROC-AUC</strong>, <strong>93.55% specificity</strong>, and <strong>95.24% precision</strong> (only 6 false positives out of 93 normal controls).
-    Among standard off-the-shelf backbones, the 201-layer <strong>DenseNet-201</strong> achieved 86.90% accuracy and 0.9434 AUC, while <strong>EfficientNet-B2</strong> reached 86.09% accuracy.
+    The proposed <strong>FootArchNet-Ultra</strong> with dual-stream cross-attention established a single-model record area under the curve of <strong>0.9506 ROC-AUC</strong> with an exceptional diagnostic accuracy of <strong>87.77%</strong> (89.52% with TTA).
+    Furthermore, combining the models into the multi-scale <strong>Super Ensemble V2 (TTA)</strong> with Swin Transformer, DenseNet-201, and FootArchNet variants achieved the top clinical benchmark: <strong>90.83% diagnostic accuracy</strong>, <strong>0.9589 ROC-AUC</strong>, <strong>93.55% specificity</strong>, and <strong>95.28% precision</strong> (only 6 false positives out of 93 normal controls).
 </p>
 
 <div class="figure-container">
     <img src="{roc_b64}" alt="ROC Comparison Curves">
-    <div class="caption">Figure 2: Comparative Receiver Operating Characteristic (ROC) curves on the independent test set (n=229) highlighting the Super Ensemble (AUC = 0.9564), FootArchNet-Ultra (AUC = 0.9506), DenseNet-201 (AUC = 0.9434), FootArchNet-V2 (AUC = 0.9435), FootArchNet-V1 (AUC = 0.9302), EfficientNet-B2 (AUC = 0.9222), ConvNeXt-Tiny (AUC = 0.9152), and ResNet-50 (AUC = 0.9134).</div>
+    <div class="caption">Figure 2: Comparative Receiver Operating Characteristic (ROC) curves on the independent test set (n=229) highlighting Super Ensemble V2 (AUC = 0.9589), FootArchNet-Ultra (AUC = 0.9506), FootArchNet-V2 (AUC = 0.9435), DenseNet-201 (AUC = 0.9434), Swin-T (AUC = 0.9336), FootArchNet-V1 (AUC = 0.9302), EfficientNet-B2 (AUC = 0.9222), ConvNeXt-Tiny (AUC = 0.9152), and ResNet-50 (AUC = 0.9134).</div>
 </div>
 
 <h3>3.2 Model Interpretability (Grad-CAM)</h3>
@@ -619,10 +629,10 @@ def generate_english_html(roc_b64: str, gradcam_b64: str, arch_svg: str) -> str:
 
 <h2>4. Discussion & Conclusion</h2>
 <p>
-    Our results demonstrate that direct radiographic deep learning classification resolves the accuracy, stability, and data-scarcity bottlenecks that hinder multi-stage landmark angle measurement methods. By achieving <strong>0.9492 ROC-AUC</strong>, <strong>86.90% accuracy</strong>, and <strong>91.41% precision</strong>, the proposed FootArchNet architectures and Clinical Ensemble provide a rapid (&lt;25 ms/image), reliable screening mechanism for orthopedic clinics that significantly reduces unnecessary secondary specialist referrals.
+    Our results demonstrate that direct radiographic deep learning classification resolves the accuracy, stability, and data-scarcity bottlenecks that hinder multi-stage landmark angle measurement methods. By achieving <strong>0.9589 ROC-AUC</strong>, <strong>90.83% accuracy</strong>, and <strong>95.28% precision</strong>, the proposed FootArchNet architectures and Super Ensemble V2 provide a rapid (&lt;25 ms/image), reliable screening mechanism for orthopedic clinics that significantly reduces unnecessary secondary specialist referrals.
 </p>
 <p>
-    <strong>Clinical Utility:</strong> Integrating FootArchNet and the Clinical Ensemble into hospital PACS environments enables instant triage during weight-bearing radiography, flagging structural pes planus deformities with high confidence while maintaining robust specificity on normal anatomy.
+    <strong>Clinical Utility:</strong> Integrating FootArchNet and the Super Ensemble into hospital PACS environments enables instant triage during weight-bearing radiography, flagging structural pes planus deformities with high confidence while maintaining robust specificity on normal anatomy.
 </p>
 
 <h2>References</h2>
@@ -869,14 +879,14 @@ def generate_turkish_html(roc_b64: str, gradcam_b64: str, arch_svg_tr: str) -> s
     </thead>
     <tbody>
         <tr>
-            <td><strong>Süper Ensemble (TTA, Kalibre)</strong></td>
-            <td><strong>%90.39</strong></td>
-            <td>%88.24</td>
+            <td><strong>Süper Ensemble V2 (TTA, Kalibre)</strong></td>
+            <td><strong>%90.83</strong></td>
+            <td>%88.97</td>
             <td><strong>%93.55</strong></td>
-            <td><strong>%95.24</strong></td>
-            <td>%84.47</td>
-            <td><strong>0.9160</strong></td>
-            <td><strong>0.9564</strong></td>
+            <td><strong>%95.28</strong></td>
+            <td>%85.29</td>
+            <td><strong>0.9202</strong></td>
+            <td><strong>0.9589</strong></td>
             <td>N/A</td>
         </tr>
         <tr>
@@ -946,6 +956,17 @@ def generate_turkish_html(roc_b64: str, gradcam_b64: str, arch_svg_tr: str) -> s
             <td>0.8875</td>
         </tr>
         <tr>
+            <td><strong>Swin-T (Vision Transformer)</strong></td>
+            <td>%83.41</td>
+            <td>%85.29</td>
+            <td>%80.65</td>
+            <td>%86.57</td>
+            <td>%78.95</td>
+            <td>0.8593</td>
+            <td>0.9336</td>
+            <td>0.3965</td>
+        </tr>
+        <tr>
             <td><strong>ResNet-50</strong></td>
             <td>%84.35</td>
             <td><strong>%94.89</strong></td>
@@ -962,13 +983,13 @@ def generate_turkish_html(roc_b64: str, gradcam_b64: str, arch_svg_tr: str) -> s
 
 <p>
     Önerilen <strong>FootArchNet-Ultra</strong> çift akışlı ve çapraz dikkatli mimarisi, tekil model bazında <strong>0.9506 ROC-AUC</strong> ile yeni bir tepe noktası belirlemiş, <strong>%87.77 doğruluk</strong> (TTA ile %89.52) sağlamıştır.
-    Ayrıca tüm modelleri birleştiren ve çok ölçekli Test-Time Augmentation (TTA) uygulayan <strong>Süper Ensemble</strong>, <strong>%90.39 genel doğruluk</strong>, <strong>0.9564 ROC-AUC</strong>, <strong>%93.55 özgüllük</strong> ve <strong>%95.24 kesinlik (PPV)</strong> değerleriyle klinik %90 çıtasını başarıyla aşmıştır (93 normal hastadan yalnızca 6'sında yanlış pozitif alarm).
+    Ayrıca tüm modelleri birleştiren ve çok ölçekli Test-Time Augmentation (TTA) uygulayan <strong>Süper Ensemble V2</strong>, <strong>%90.83 genel doğruluk</strong>, <strong>0.9589 ROC-AUC</strong>, <strong>%93.55 özgüllük</strong> ve <strong>%95.28 kesinlik (PPV)</strong> değerleriyle klinik %90 çıtasını başarıyla aşmıştır (93 normal hastadan yalnızca 6'sında yanlış pozitif alarm).
     Standart radyoloji mimarisi olan 201 katmanlı <strong>DenseNet-201</strong> ise %86.90 doğruluk ve 0.9434 AUC elde etmiştir.
 </p>
 
 <div class="figure-container">
     <img src="{roc_b64}" alt="ROC Eğrileri">
-    <div class="caption">Şekil 2: Bağımsız test setinde (n=229) Süper Ensemble (AUC = 0.9564), FootArchNet-Ultra (AUC = 0.9506), DenseNet-201 (AUC = 0.9434), FootArchNet-V2 (AUC = 0.9435), FootArchNet-V1 (AUC = 0.9302), EfficientNet-B2 (AUC = 0.9222), ConvNeXt-Tiny (AUC = 0.9152) ve ResNet-50 (AUC = 0.9134) ROC eğrileri karşılaştırması.</div>
+    <div class="caption">Şekil 2: Bağımsız test setinde (n=229) Süper Ensemble V2 (AUC = 0.9589), FootArchNet-Ultra (AUC = 0.9506), FootArchNet-V2 (AUC = 0.9435), DenseNet-201 (AUC = 0.9434), Swin-T (AUC = 0.9336), FootArchNet-V1 (AUC = 0.9302), EfficientNet-B2 (AUC = 0.9222), ConvNeXt-Tiny (AUC = 0.9152) ve ResNet-50 (AUC = 0.9134) ROC eğrileri karşılaştırması.</div>
 </div>
 
 <h3>3.2 Grad-CAM Anatomik Açıklanabilirlik</h3>
@@ -983,10 +1004,10 @@ def generate_turkish_html(roc_b64: str, gradcam_b64: str, arch_svg_tr: str) -> s
 
 <h2>4. Tartışma ve Sonuç</h2>
 <p>
-    Elde edilen bulgular, doğrudan radyografik derin öğrenme sınıflandırmasının nirengi sapmalarından kaynaklanan açı hatalarını ve etiketleme darboğazını ortadan kaldırdığını göstermektedir. <strong>0.9564 ROC-AUC</strong>, <strong>%90.39 genel doğruluk</strong>, <strong>%93.55 özgüllük</strong> ve <strong>%95.24 kesinlik</strong> ile FootArchNet-Ultra mimarisi ve Süper Ensemble, ortopedi kliniklerinde hızlı (&lt;25 ms/grafi) ve güvenilir bir otomatik tarama mekanizması sağlamaktadır.
+    Elde edilen bulgular, doğrudan radyografik derin öğrenme sınıflandırmasının nirengi sapmalarından kaynaklanan açı hatalarını ve etiketleme darboğazını ortadan kaldırdığını göstermektedir. <strong>0.9589 ROC-AUC</strong>, <strong>%90.83 genel doğruluk</strong>, <strong>%93.55 özgüllük</strong> ve <strong>%95.28 kesinlik</strong> ile FootArchNet-Ultra mimarisi ve Süper Ensemble V2, ortopedi kliniklerinde hızlı (&lt;25 ms/grafi) ve güvenilir bir otomatik tarama mekanizması sağlamaktadır.
 </p>
 <p>
-    <strong>Klinik Uygulanabilirlik:</strong> FootArchNet-Ultra ve Süper Ensemble, hastane PACS radyoloji iş akışlarına entegre edildiğinde radyografileri anında önceliklendirerek gereksiz sevkleri ve tanı gecikmelerini minimize edebilecek klinik yetkinliğe sahiptir.
+    <strong>Klinik Uygulanabilirlik:</strong> FootArchNet-Ultra ve Süper Ensemble V2, hastane PACS radyoloji iş akışlarına entegre edildiğinde radyografileri anında önceliklendirerek gereksiz sevkleri ve tanı gecikmelerini minimize edebilecek klinik yetkinliğe sahiptir.
 </p>
 
 <h2>Kaynaklar</h2>
