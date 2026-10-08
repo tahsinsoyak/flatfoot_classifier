@@ -77,6 +77,15 @@ def create_model(
             nn.Linear(in_features, num_classes),
         )
 
+    elif model_name == "densenet201":
+        weights = models.DenseNet201_Weights.DEFAULT if pretrained else None
+        model = models.densenet201(weights=weights)
+        in_features = model.classifier.in_features
+        model.classifier = nn.Sequential(
+            nn.Dropout(p=dropout),
+            nn.Linear(in_features, num_classes),
+        )
+
     elif model_name in ["foot_arch_net", "footarchnet"]:
         from src.models.foot_arch_net import create_foot_arch_net
         model = create_foot_arch_net(
@@ -95,10 +104,18 @@ def create_model(
             backbone_type="convnext_tiny",
         )
 
+    elif model_name in ["foot_arch_net_ultra", "footarchnet_ultra", "footarchnetultra"]:
+        from src.models.foot_arch_net_ultra import create_foot_arch_net_ultra
+        model = create_foot_arch_net_ultra(
+            num_classes=num_classes,
+            pretrained=pretrained,
+            dropout=dropout,
+        )
+
     else:
         raise ValueError(
             f"Unsupported model_name: {model_name}. "
-            "Supported: foot_arch_net_v2, foot_arch_net, resnet50, resnet18, efficientnet_b2, efficientnet_b0, convnext_tiny, densenet121"
+            "Supported: foot_arch_net_ultra, foot_arch_net_v2, foot_arch_net, resnet50, resnet18, efficientnet_b2, efficientnet_b0, convnext_tiny, densenet121, densenet201"
         )
 
     return model

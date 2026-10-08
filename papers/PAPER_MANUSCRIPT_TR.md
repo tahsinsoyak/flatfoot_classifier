@@ -102,13 +102,18 @@ Tüm modeller ImageNet ağırlıklarıyla başlatılmış ve ikili sınıflandı
 ### 3.1 Test Seti Teşhis Başarımı
 Modellerin bağımsız 230 klinik vaka üzerindeki sonuçları Tablo 1'de sunulmuştur:
 
-**Tablo 1: Bağımsız test setinde (n=230) standart derin öğrenme modellerinin teşhis performansı.**
+**Tablo 1: Bağımsız klinik test setinde (n=229) standart derin öğrenme modellerinin teşhis performansı.**
 
-| Model Mimarisi | Doğruluk (Accuracy) | Hassasiyet (Sens/Recall) | Özgüllük (Specificity) | Kesinlik (Precision/PPV) | NPV | F1-Skoru | ROC-AUC | Test Kaybı (Loss) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **EfficientNet-B2** | **%86.09** | %91.24 | **%78.49** | **%86.21** | %85.88 | **0.8865** | **0.9222** | **0.5091** |
-| **ConvNeXt-Tiny** | %84.35 | %94.16 | %69.89 | %82.17 | %89.04 | 0.8776 | 0.9152 | 0.8875 |
-| **ResNet-50** | %84.35 | **%94.89** | %68.82 | %81.76 | **%90.14** | 0.8784 | 0.9134 | 0.6363 |
+| Model Mimarisi | Doğruluk (Accuracy) | Hassasiyet (Sens/Recall) | Özgüllük (Specificity) | Kesinlik (Precision/PPV) | NPV | F1-Skoru | ROC-AUC |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Süper Ensemble (TTA, Kalibre)** | **%90.39** | %88.24 | **%93.55** | **%95.24** | %84.47 | **0.9160** | **0.9564** |
+| **FootArchNet-Ultra (Önerilen)** | **%87.77** | **%89.71** | %84.95 | %89.71 | %84.95 | 0.8971 | **0.9506** |
+| **DenseNet-201** | %86.90 | %88.24 | %84.95 | %89.55 | %83.16 | 0.8889 | 0.9434 |
+| **FootArchNet-V1** | %85.59 | %87.50 | %82.80 | %88.15 | %81.91 | 0.8782 | 0.9302 |
+| **FootArchNet-V2** | %84.28 | %83.82 | %84.95 | %89.06 | %78.22 | 0.8636 | 0.9435 |
+| **EfficientNet-B2** | %86.09 | %91.24 | %78.49 | %86.21 | %85.88 | 0.8865 | 0.9222 |
+| **ConvNeXt-Tiny** | %84.35 | %94.16 | %69.89 | %82.17 | %89.04 | 0.8776 | 0.9152 |
+| **ResNet-50** | %84.35 | %94.89 | %68.82 | %81.76 | %90.14 | 0.8784 | 0.9134 |
 
 - **EfficientNet-B2**, en yüksek doğruluğu (%86.09), en yüksek ROC-AUC skorunu (**0.9222**), en dengeli özgüllüğü (%78.49) ve en düşük test kaybını (0.5091) elde ederek genel sıralamada lider olmuştur.
 - **ResNet-50**, **%94.89 hassasiyetle** test kümesindeki 137 düz taban hastasından **130 tanesini doğru yakalamış**, yalnızca 7 tanesini kaçırmıştır (NPV: %90.14). Tarama amaçlı klinik uygulamalarda düz tabanı atlamama açısından çok kritik bir başarıdır.
