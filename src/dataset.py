@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Callable, Optional, Tuple
 import pandas as pd
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 from torchvision import transforms
 
@@ -102,3 +102,50 @@ def get_transforms(
             transforms.ToTensor(),
             transforms.Normalize(mean=mean, std=std),
         ])
+
+
+def create_dataloaders(
+    data_dir: Path | str = "data",
+    img_size: int = 512,
+    batch_size: int = 16,
+    num_workers: int = 2,
+    pin_memory: bool = True,
+):
+    """Build train, val, and test DataLoader instances."""
+    data_dir = Path(data_dir)
+    train_csv = data_dir / "splits" / "train.csv"
+    val_csv = data_dir / "splits" / "val.csv"
+    test_csv = data_dir / "splits" / "test.csv"
+
+    train_tf = get_transforms(image_size=img_size, is_training=True)
+    eval_tf = get_transforms(image_size=img_size, is_training=False)
+
+    train_ds = FootRadiographDataset(train_csv, transform=train_tf)
+    val_ds = FootRadiographDataset(val_csv, transform=eval_tf)
+    test_ds = FootRadiographDataset(test_csv, transform=eval_tf, return_meta=True)
+
+    train_loader = DataLoader(
+        train_ds,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=num_workers,
+        pin_memory=pin_memory,
+        drop_last=True,
+    )
+    val_loader = DataLoader(
+        val_ds,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=num_workers,
+        pin_memory=pin_memory,
+    )
+    test_loader = DataLoader(
+        test_ds,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=num_workers,
+        pin_memory=pin_memory,
+    )
+
+    return train_loader, val_loader, test_loader
+
