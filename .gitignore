@@ -19,6 +19,9 @@ experiments/runs/
 *.pt
 *.pth
 *.onnx
+*.zip
+*.tar.gz
+
 
 # OS & IDE
 .vscode/

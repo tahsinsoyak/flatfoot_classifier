@@ -37,11 +37,12 @@ def get_target_layer_for_gradcam(model_name: str, model: nn.Module) -> nn.Module
         return model.features[-1]
     elif "convnext" in model_name:
         return model.features[-1]
-    elif "densenet" in model_name:
-        return model.features.denseblock4
+    elif "foot_arch" in model_name or "footarch" in model_name:
+        return model.fusion_block.fusion_conv[-3]
     else:
         # Default fallback to last module before fc
         return list(model.children())[-2]
+
 
 
 def main():

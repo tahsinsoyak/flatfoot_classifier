@@ -77,10 +77,20 @@ def create_model(
             nn.Linear(in_features, num_classes),
         )
 
+    elif model_name in ["foot_arch_net", "footarchnet"]:
+        from src.models.foot_arch_net import create_foot_arch_net
+        model = create_foot_arch_net(
+            num_classes=num_classes,
+            pretrained=pretrained,
+            dropout=dropout,
+            backbone_type="efficientnet_b2",
+        )
+
     else:
         raise ValueError(
             f"Unsupported model_name: {model_name}. "
-            "Supported: resnet50, resnet18, efficientnet_b2, efficientnet_b0, convnext_tiny, densenet121"
+            "Supported: foot_arch_net, resnet50, resnet18, efficientnet_b2, efficientnet_b0, convnext_tiny, densenet121"
         )
 
     return model
+
