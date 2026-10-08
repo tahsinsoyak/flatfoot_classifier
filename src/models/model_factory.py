@@ -121,10 +121,66 @@ def create_model(
             nn.Linear(in_features, num_classes),
         )
 
+    elif model_name in ["swin_s", "swin_small"]:
+        weights = models.Swin_S_Weights.DEFAULT if pretrained else None
+        model = models.swin_s(weights=weights)
+        in_features = model.head.in_features
+        model.head = nn.Sequential(
+            nn.Dropout(p=dropout),
+            nn.Linear(in_features, num_classes),
+        )
+
+    elif model_name in ["swin_b", "swin_base"]:
+        weights = models.Swin_B_Weights.DEFAULT if pretrained else None
+        model = models.swin_b(weights=weights)
+        in_features = model.head.in_features
+        model.head = nn.Sequential(
+            nn.Dropout(p=dropout),
+            nn.Linear(in_features, num_classes),
+        )
+
+    elif model_name in ["convnext_small"]:
+        weights = models.ConvNeXt_Small_Weights.DEFAULT if pretrained else None
+        model = models.convnext_small(weights=weights)
+        in_features = model.classifier[2].in_features
+        model.classifier[2] = nn.Sequential(
+            nn.Dropout(p=dropout),
+            nn.Linear(in_features, num_classes),
+        )
+
+    elif model_name in ["convnext_base"]:
+        weights = models.ConvNeXt_Base_Weights.DEFAULT if pretrained else None
+        model = models.convnext_base(weights=weights)
+        in_features = model.classifier[2].in_features
+        model.classifier[2] = nn.Sequential(
+            nn.Dropout(p=dropout),
+            nn.Linear(in_features, num_classes),
+        )
+
+    elif model_name in ["efficientnet_b4"]:
+        weights = models.EfficientNet_B4_Weights.DEFAULT if pretrained else None
+        model = models.efficientnet_b4(weights=weights)
+        in_features = model.classifier[1].in_features
+        model.classifier[1] = nn.Sequential(
+            nn.Dropout(p=dropout),
+            nn.Linear(in_features, num_classes),
+        )
+
+    elif model_name in ["efficientnet_v2_m"]:
+        weights = models.EfficientNet_V2_M_Weights.DEFAULT if pretrained else None
+        model = models.efficientnet_v2_m(weights=weights)
+        in_features = model.classifier[1].in_features
+        model.classifier[1] = nn.Sequential(
+            nn.Dropout(p=dropout),
+            nn.Linear(in_features, num_classes),
+        )
+
     else:
         raise ValueError(
             f"Unsupported model_name: {model_name}. "
-            "Supported: foot_arch_net_ultra, foot_arch_net_v2, foot_arch_net, swin_t, densenet201, densenet121, resnet50, convnext_tiny, efficientnet_b2"
+            "Supported: foot_arch_net_ultra, foot_arch_net_v2, foot_arch_net, "
+            "swin_b, swin_s, swin_t, convnext_base, convnext_small, convnext_tiny, "
+            "densenet201, densenet121, resnet50, efficientnet_v2_m, efficientnet_b4, efficientnet_b2"
         )
 
     return model

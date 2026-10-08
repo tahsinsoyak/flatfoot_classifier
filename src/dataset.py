@@ -36,7 +36,26 @@ class FootRadiographDataset(Dataset):
         if self.cache_in_memory and idx in self.cache:
             image = self.cache[idx]
         else:
-            img_path = row["processed_path"]
+            raw_path_str = str(row["processed_path"])
+            img_path = Path(raw_path_str)
+            if not img_path.exists():
+                # Resolve cross-platform relative path (e.g. when run on Linux/Colab)
+                norm_str = raw_path_str.replace("\\", "/")
+                parts = Path(norm_str).parts
+                if "data" in parts:
+                    data_idx = parts.index("data")
+                    rel_candidate = Path(*parts[data_idx:])
+                    if rel_candidate.exists():
+                        img_path = rel_candidate
+                    else:
+                        cand = Path("data/processed") / parts[-2] / parts[-1]
+                        if cand.exists():
+                            img_path = cand
+                else:
+                    cand = Path("data/processed") / parts[-2] / parts[-1]
+                    if cand.exists():
+                        img_path = cand
+
             image = Image.open(img_path).convert("RGB")
             if self.cache_in_memory:
                 self.cache[idx] = image
