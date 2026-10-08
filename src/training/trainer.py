@@ -21,17 +21,20 @@ class Trainer:
     def __init__(
         self,
         model: nn.Module,
-        train_loader: DataLoader,
-        val_loader: DataLoader,
-        criterion: nn.Module,
-        optimizer: torch.optim.Optimizer,
+        train_loader: Optional[DataLoader] = None,
+        val_loader: Optional[DataLoader] = None,
+        criterion: Optional[nn.Module] = None,
+        optimizer: Optional[torch.optim.Optimizer] = None,
         scheduler: Optional[Any] = None,
         device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu"),
-        checkpoint_dir: Path | str = "experiments/checkpoints",
+        checkpoint_dir: Optional[Path | str] = None,
+        output_dir: Optional[Path | str] = None,
         use_amp: bool = True,
         early_stopping_patience: int = 10,
+        patience: Optional[int] = None,
         use_ema: bool = True,
         ema_decay: float = 0.999,
+        **kwargs,
     ) -> None:
         self.model = model.to(device)
         self.train_loader = train_loader
@@ -40,11 +43,15 @@ class Trainer:
         self.optimizer = optimizer
         self.scheduler = scheduler
         self.device = device
-        self.checkpoint_dir = Path(checkpoint_dir)
+        
+        save_path = output_dir or checkpoint_dir or "experiments/checkpoints"
+        self.checkpoint_dir = Path(save_path)
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        self.output_dir = self.checkpoint_dir
+
         self.use_amp = use_amp and (device.type == "cuda")
         self.scaler = torch.amp.GradScaler('cuda', enabled=self.use_amp)
-        self.early_stopping_patience = early_stopping_patience
+        self.early_stopping_patience = patience if patience is not None else early_stopping_patience
         self.use_ema = use_ema
         self.ema_decay = ema_decay
 
@@ -132,11 +139,25 @@ class Trainer:
 
         return avg_loss, metrics, y_true, y_pred, y_prob
 
-    def fit(self, num_epochs: int = 30) -> Dict[str, Any]:
-        print(f"Starting training for {num_epochs} epochs on {self.device} (AMP: {self.use_amp})...")
+    def fit(
+        self,
+        train_loader: Optional[DataLoader] = None,
+        val_loader: Optional[DataLoader] = None,
+        epochs: Optional[int] = None,
+        num_epochs: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        if train_loader is not None:
+            self.train_loader = train_loader
+        if val_loader is not None:
+            self.val_loader = val_loader
+        if self.train_loader is None or self.val_loader is None:
+            raise ValueError("train_loader and val_loader must be provided either to Trainer.__init__ or Trainer.fit")
+
+        total_epochs = epochs if epochs is not None else (num_epochs if num_epochs is not None else 30)
+        print(f"Starting training for {total_epochs} epochs on {self.device} (AMP: {self.use_amp})...")
         patience_counter = 0
 
-        for epoch in range(1, num_epochs + 1):
+        for epoch in range(1, total_epochs + 1):
             start_t = time.time()
             train_loss, train_metrics = self.train_epoch()
             val_loss, val_metrics, _, _, _ = self.evaluate(self.val_loader)
