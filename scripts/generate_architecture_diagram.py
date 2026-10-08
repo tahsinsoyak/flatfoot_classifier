@@ -57,9 +57,9 @@ def create_architecture_svg(output_path: Path | str, lang: str = "en") -> str:
         h_stg4_t = "Aşama 4: Ark Çökmesi"
         h_stg4_s = "Genel MLA morfolojisi"
 
-        models_badge = "Önerilen Model: FootArchNet (0.9302 ROC-AUC) • Karşılaştırma: EfficientNet-B2, ResNet-50, ConvNeXt"
-        models_sub = "• Çok Ölçekli Reseptif Alan • Squeeze-and-Excitation Dikkati • Boylamsal Ayak Arkı Havuzlama"
-        future_badge = "Özgün FootArchNet: Anatomik Ark Morfolojisine Özelleştirilmiş Derin Ağ Mimarisi"
+        models_badge = "Önerilen: FootArchNet-V2 (0.9435 AUC) • Klinik Ensemble (0.9492 AUC, %86.9 Doğruluk)"
+        models_sub = "• CoordConv Koordinat Kanalları • TransArchAttention Transformer • Çok Ölçekli Biyomekanik Piramit"
+        future_badge = "Özgün FootArchNet-V2: Konvolüsyon-Transformer Hibrit Ayak Arkı Teşhis Mimarisi"
 
         sec_c_title = "C. KLİNİK TANI VE GRAD-CAM AÇIKLANABİLİRLİK"
         diag_title = "Teşhis Karar Çıktısı"
@@ -134,9 +134,9 @@ def create_architecture_svg(output_path: Path | str, lang: str = "en") -> str:
         h_stg4_t = "Stage 4: Arch Sag"
         h_stg4_s = "Global MLA collapse"
 
-        models_badge = "Proposed Model: FootArchNet (0.9302 ROC-AUC) • Benchmarks: EfficientNet-B2, ResNet-50, ConvNeXt-Tiny"
-        models_sub = "• Multi-Scale Receptive Convolutions • Squeeze-and-Excitation Channel Attention • Longitudinal Arch Pooling"
-        future_badge = "Proposed FootArchNet: Tailored Deep Architecture for Weight-Bearing Arch Morphology"
+        models_badge = "Proposed: FootArchNet-V2 (0.9435 AUC) • Clinical Ensemble (0.9492 AUC, 86.9% Acc)"
+        models_sub = "• CoordConv Spatial Coordinate Channels • TransArchAttention Transformer • Multi-Scale Pyramid"
+        future_badge = "Proposed FootArchNet-V2: Hybrid CNN-Transformer Architecture for Weight-Bearing Arch Morphology"
 
         sec_c_title = "C. DIAGNOSTIC OUTPUT & GRAD-CAM XAI"
         diag_title = "Diagnostic Decision Head"

@@ -86,10 +86,19 @@ def create_model(
             backbone_type="efficientnet_b2",
         )
 
+    elif model_name in ["foot_arch_net_v2", "footarchnet_v2", "footarchnetv2"]:
+        from src.models.foot_arch_net_v2 import create_foot_arch_net_v2
+        model = create_foot_arch_net_v2(
+            num_classes=num_classes,
+            pretrained=pretrained,
+            dropout=dropout,
+            backbone_type="convnext_tiny",
+        )
+
     else:
         raise ValueError(
             f"Unsupported model_name: {model_name}. "
-            "Supported: foot_arch_net, resnet50, resnet18, efficientnet_b2, efficientnet_b0, convnext_tiny, densenet121"
+            "Supported: foot_arch_net_v2, foot_arch_net, resnet50, resnet18, efficientnet_b2, efficientnet_b0, convnext_tiny, densenet121"
         )
 
     return model

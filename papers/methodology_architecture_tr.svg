@@ -307,12 +307,12 @@
     <!-- Bottom Architecture Compatibility Bar -->
     <g transform="translate(16, 436)">
       <rect x="0" y="0" width="518" height="92" rx="6" fill="#ecfdf5" stroke="#34d399" stroke-width="1.2" />
-      <text x="259" y="22" fill="#065f46" font-size="10" font-weight="700" text-anchor="middle">Önerilen Model: FootArchNet (0.9302 ROC-AUC) • Karşılaştırma: EfficientNet-B2, ResNet-50, ConvNeXt</text>
-      <text x="259" y="42" fill="#1e293b" font-size="9" text-anchor="middle">• Çok Ölçekli Reseptif Alan • Squeeze-and-Excitation Dikkati • Boylamsal Ayak Arkı Havuzlama</text>
+      <text x="259" y="22" fill="#065f46" font-size="10" font-weight="700" text-anchor="middle">Önerilen: FootArchNet-V2 (0.9435 AUC) • Klinik Ensemble (0.9492 AUC, %86.9 Doğruluk)</text>
+      <text x="259" y="42" fill="#1e293b" font-size="9" text-anchor="middle">• CoordConv Koordinat Kanalları • TransArchAttention Transformer • Çok Ölçekli Biyomekanik Piramit</text>
       
       <rect x="18" y="54" width="482" height="26" rx="4" fill="#065f46" />
       <text x="259" y="71" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">
-        Özgün FootArchNet: Anatomik Ark Morfolojisine Özelleştirilmiş Derin Ağ Mimarisi
+        Özgün FootArchNet-V2: Konvolüsyon-Transformer Hibrit Ayak Arkı Teşhis Mimarisi
       </text>
     </g>
   </g>

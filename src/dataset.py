@@ -18,21 +18,28 @@ class FootRadiographDataset(Dataset):
         csv_path: Path | str,
         transform: Optional[Callable] = None,
         return_meta: bool = False,
+        cache_in_memory: bool = True,
     ) -> None:
         self.df = pd.read_csv(csv_path)
         self.transform = transform
         self.return_meta = return_meta
+        self.cache_in_memory = cache_in_memory
+        self.cache: dict[int, Image.Image] = {}
 
     def __len__(self) -> int:
         return len(self.df)
 
     def __getitem__(self, idx: int):
         row = self.df.iloc[idx]
-        img_path = row["processed_path"]
         label = int(row["label"])
 
-        # Load image as RGB (3 identical channels) for standard pretrained backbones
-        image = Image.open(img_path).convert("RGB")
+        if self.cache_in_memory and idx in self.cache:
+            image = self.cache[idx]
+        else:
+            img_path = row["processed_path"]
+            image = Image.open(img_path).convert("RGB")
+            if self.cache_in_memory:
+                self.cache[idx] = image
 
         if self.transform is not None:
             image = self.transform(image)
@@ -41,7 +48,7 @@ class FootRadiographDataset(Dataset):
             return image, label, {
                 "image_id": row["image_id"],
                 "class_name": row["class_name"],
-                "path": str(img_path),
+                "path": str(row["processed_path"]),
             }
 
         return image, label

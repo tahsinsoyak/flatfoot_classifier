@@ -33,14 +33,16 @@ from src.models.gradcam import GradCAM
 
 def get_target_layer_for_gradcam(model_name: str, model: nn.Module) -> nn.Module:
     model_name = model_name.lower().replace("-", "_")
-    if "resnet" in model_name:
+    if "foot_arch_net_v2" in model_name or "footarchnet_v2" in model_name or "footarchnetv2" in model_name:
+        return model.pyramid.refine_conv[-3]
+    elif "foot_arch" in model_name or "footarch" in model_name:
+        return model.fusion_block.fusion_conv[-3]
+    elif "resnet" in model_name:
         return model.layer4[-1]
     elif "efficientnet" in model_name:
         return model.features[-1]
     elif "convnext" in model_name:
         return model.features[-1]
-    elif "foot_arch" in model_name or "footarch" in model_name:
-        return model.fusion_block.fusion_conv[-3]
     else:
         # Default fallback to last module before fc
         return list(model.children())[-2]
@@ -56,6 +58,7 @@ def main():
     parser.add_argument("--img-size", type=int, default=512, help="Image resolution")
     parser.add_argument("--weight-decay", type=float, default=1e-2, help="Weight decay")
     parser.add_argument("--dropout", type=float, default=0.2, help="Dropout rate")
+    parser.add_argument("--label-smoothing", type=float, default=0.05, help="Label smoothing epsilon")
     parser.add_argument("--device", type=str, default="auto", help="Device (cuda or cpu or auto)")
     parser.add_argument("--num-workers", type=int, default=2, help="Data loader workers")
     args = parser.parse_args()
@@ -124,7 +127,7 @@ def main():
     print(f"Class counts - Normal: {n_norm}, Pes Planus: {n_pes}")
     print(f"Calculated loss weights - Normal: {weight_norm:.3f}, Pes Planus: {weight_pes:.3f}")
 
-    criterion = nn.CrossEntropyLoss(weight=class_weights)
+    criterion = nn.CrossEntropyLoss(weight=class_weights, label_smoothing=args.label_smoothing)
 
     # Create model
     print(f"Building model: {args.model}...")

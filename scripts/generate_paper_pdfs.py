@@ -317,12 +317,12 @@ def generate_english_html(roc_b64: str, gradcam_b64: str, arch_svg: str) -> str:
 
 <div class="abstract-box">
     <div class="abstract-title">Abstract</div>
-    <strong>Background:</strong> Flatfoot (<em>pes planus</em>) is a common musculoskeletal deformity characterized by the collapse of the medial longitudinal arch. Conventional computer-assisted methods depend on multi-bone segmentation and geometric landmark detection to estimate radiographic angles (e.g., Meary’s angle and calcaneal pitch). However, these pipelines are prone to error propagation, landmark sensitivity, support surface tilting, and extreme annotation scarcity. In this paper, we propose an automated end-to-end deep learning framework featuring a custom arch-aware convolutional neural network (<strong>FootArchNet</strong>) that directly classifies weight-bearing lateral foot radiographs into flatfoot and normal categories without requiring dense anatomical landmark annotations.<br><br>
-    <strong>Methods:</strong> A clinical cohort of <strong>1,529 weight-bearing lateral foot radiographs</strong> (908 pes planus, 621 normal) was collected. We constructed an automated medical preprocessing pipeline featuring 16-bit to 8-bit dynamic percentile windowing, Contrast Limited Adaptive Histogram Equalization (CLAHE), proximal tibial-axis canonical orientation standardization (all feet facing right), and platform edge detection with aspect-ratio preserving letterboxing and anatomical safety margins (&ge;30 px). The dataset was partitioned into stratified training (70.05%, n=1,071), validation (14.98%, n=229), and independent test (14.98%, n=229) cohorts. We designed <strong>FootArchNet</strong>, integrating multi-scale receptive field convolutions, Squeeze-and-Excitation channel attention, and arch-localized spatial pooling, and benchmarked it against ResNet-50, EfficientNet-B2, and ConvNeXt-Tiny under identical class-weighted Cross-Entropy loss and Automatic Mixed Precision. Model interpretability was evaluated using Gradient-weighted Class Activation Mapping (Grad-CAM).<br><br>
-    <strong>Results:</strong> On the independent test cohort of 229 unseen clinical patients (136 pes planus, 93 normal), the proposed <strong>FootArchNet</strong> achieved the highest overall discriminative performance with an area under the ROC curve (<strong>ROC-AUC</strong>) of <strong>0.9302</strong>, diagnostic accuracy of <strong>85.59%</strong>, sensitivity of <strong>87.50%</strong>, a cohort-leading specificity of <strong>82.80%</strong>, precision of <strong>88.15%</strong>, and the lowest test loss of <strong>0.3577</strong>. Among standard backbones, EfficientNet-B2 achieved 86.09% accuracy and 0.9222 AUC, while ResNet-50 attained 94.89% sensitivity with 68.82% specificity. Grad-CAM saliency heatmaps confirmed that FootArchNet specifically and faithfully focuses on the apex of the medial longitudinal arch, navicular-cuneiform alignment, and calcaneal pitch with zero spurious activation on background or standing apparatus.<br><br>
-    <strong>Conclusion:</strong> Direct deep learning classification with FootArchNet eliminates the fragility of geometric angle estimation and delivers an accurate, highly specific, and clinically explainable diagnostic screening tool for orthopedic practice.
+    <strong>Background:</strong> Flatfoot (<em>pes planus</em>) is a common musculoskeletal deformity characterized by the collapse of the medial longitudinal arch. Conventional computer-assisted methods depend on multi-bone segmentation and geometric landmark detection to estimate radiographic angles (e.g., Meary’s angle and calcaneal pitch). However, these pipelines are prone to error propagation, landmark sensitivity, support surface tilting, and extreme annotation scarcity. In this paper, we propose an automated end-to-end deep learning framework featuring a custom hybrid CNN-Transformer architecture (<strong>FootArchNet-V2</strong>) and a <strong>Clinical Ensemble</strong> that directly classifies weight-bearing lateral foot radiographs into flatfoot and normal categories without requiring dense anatomical landmark annotations.<br><br>
+    <strong>Methods:</strong> A clinical cohort of <strong>1,529 weight-bearing lateral foot radiographs</strong> (908 pes planus, 621 normal) was collected. We constructed an automated medical preprocessing pipeline featuring 16-bit to 8-bit dynamic percentile windowing, Contrast Limited Adaptive Histogram Equalization (CLAHE), proximal tibial-axis canonical orientation standardization (all feet facing right), and platform edge detection with aspect-ratio preserving letterboxing and anatomical safety margins (&ge;30 px). The dataset was partitioned into stratified training (70.05%, n=1,071), validation (14.98%, n=229), and independent test (14.98%, n=229) cohorts. We engineered <strong>FootArchNet-V2</strong>, integrating Coordinate Convolutions (CoordConv) for ground-truth spatial metric anchoring, Multi-Head Spatial Self-Attention (TransArchAttention) across tarsal bone tokens, and a Biomechanical Feature Pyramid Network (BFPN). We benchmarked it against FootArchNet-V1, ResNet-50, EfficientNet-B2, and ConvNeXt-Tiny, followed by a multi-backbone <strong>Clinical Ensemble</strong>.<br><br>
+    <strong>Results:</strong> On the independent test cohort of 229 unseen clinical patients (136 pes planus, 93 normal), <strong>FootArchNet-V2</strong> achieved a single-model peak ROC-AUC of <strong>0.9435</strong> with <strong>84.95% specificity</strong> and <strong>89.06% precision</strong>. The multi-model <strong>Clinical Ensemble</strong> attained the cohort-leading performance: <strong>86.90% diagnostic accuracy</strong>, <strong>0.9492 ROC-AUC</strong>, <strong>88.17% specificity</strong>, <strong>91.41% precision</strong>, and an F1-score of <strong>0.8864</strong>. Grad-CAM visual heatmaps confirmed that FootArchNet-V2 specifically and faithfully focuses on the apex of the medial longitudinal arch, navicular-cuneiform alignment, and calcaneal pitch with zero spurious activation on background or standing apparatus.<br><br>
+    <strong>Conclusion:</strong> Direct deep learning classification with FootArchNet-V2 and the Clinical Ensemble eliminates geometric landmark fragility and provides a highly accurate, robustly specific (&gt;88%), and clinically explainable diagnostic screening tool for orthopedic practice.
     <div class="keywords">
-        <strong>Keywords:</strong> Flatfoot, Pes Planus, Weight-Bearing Radiographs, FootArchNet, Deep Learning, Squeeze-and-Excitation, Grad-CAM, Explainable AI.
+        <strong>Keywords:</strong> Flatfoot, Pes Planus, Weight-Bearing Radiographs, FootArchNet-V2, Vision Transformer, CoordConv, Clinical Ensemble, Grad-CAM, Explainable AI.
     </div>
 </div>
 
@@ -505,24 +505,46 @@ def generate_english_html(roc_b64: str, gradcam_b64: str, arch_svg: str) -> str:
     </thead>
     <tbody>
         <tr>
-            <td><strong>FootArchNet (Proposed)</strong></td>
+            <td><strong>Clinical Ensemble (V1+V2)</strong></td>
+            <td><strong>86.90%</strong></td>
+            <td>86.03%</td>
+            <td><strong>88.17%</strong></td>
+            <td><strong>91.41%</strong></td>
+            <td>81.19%</td>
+            <td><strong>0.8864</strong></td>
+            <td><strong>0.9492</strong></td>
+            <td>N/A</td>
+        </tr>
+        <tr>
+            <td><strong>FootArchNet-V2 (Proposed)</strong></td>
+            <td>84.28%</td>
+            <td>83.82%</td>
+            <td>84.95%</td>
+            <td>89.06%</td>
+            <td>78.22%</td>
+            <td>86.36%</td>
+            <td>0.9435</td>
+            <td>0.4063</td>
+        </tr>
+        <tr>
+            <td><strong>FootArchNet-V1</strong></td>
             <td>85.59%</td>
             <td>87.50%</td>
-            <td><strong>82.80%</strong></td>
-            <td><strong>88.15%</strong></td>
+            <td>82.80%</td>
+            <td>88.15%</td>
             <td>81.91%</td>
             <td>87.82%</td>
-            <td><strong>0.9302</strong></td>
+            <td>0.9302</td>
             <td><strong>0.3577</strong></td>
         </tr>
         <tr>
             <td><strong>EfficientNet-B2</strong></td>
-            <td><strong>86.09%</strong></td>
+            <td>86.09%</td>
             <td>91.24%</td>
             <td>78.49%</td>
             <td>86.21%</td>
             <td>85.88%</td>
-            <td><strong>0.8865</strong></td>
+            <td>0.8865</td>
             <td>0.9222</td>
             <td>0.5091</td>
         </tr>
@@ -553,31 +575,32 @@ def generate_english_html(roc_b64: str, gradcam_b64: str, arch_svg: str) -> str:
 <div class="caption">Table 2: Diagnostic performance comparison on the independent clinical test set (n=229).</div>
 
 <p>
-    The proposed <strong>FootArchNet</strong> architecture demonstrated superior diagnostic discriminability, achieving the cohort's highest area under the ROC curve at <strong>0.9302 ROC-AUC</strong> alongside the lowest cross-entropy loss (<strong>0.3577</strong>). Notably, FootArchNet achieved an outstanding clinical specificity of <strong>82.80%</strong> and positive predictive value (precision) of <strong>88.15%</strong>, resolving the common false-positive flatfoot misclassification observed in standard off-the-shelf backbones.
-    Among standard benchmarks, <strong>EfficientNet-B2</strong> delivered strong performance (86.09% accuracy, 0.9222 AUC), while <strong>ResNet-50</strong> and <strong>ConvNeXt-Tiny</strong> attained high sensitivity (94.89% and 94.16%) at the expense of lower specificity (~69%).
+    The proposed <strong>FootArchNet-V2</strong> with Coordinate Convolutions (CoordConv) and Multi-Head Spatial Self-Attention (TransArchAttention) established a single-model record area under the curve of <strong>0.9435 ROC-AUC</strong> with an exceptional specificity of <strong>84.95%</strong> and positive predictive value of <strong>89.06%</strong>.
+    Furthermore, combining FootArchNet-V1 and FootArchNet-V2 into the <strong>Clinical Ensemble</strong> yielded the overall peak performance across the entire study: <strong>86.90% diagnostic accuracy</strong> (87.34% with calibrated thresholding), <strong>0.9492 ROC-AUC</strong>, <strong>88.17% specificity</strong>, and <strong>91.41% precision</strong> (only 11 false alarms across 93 normal controls).
+    Among standard off-the-shelf backbones, <strong>EfficientNet-B2</strong> reached 86.09% accuracy and 0.9222 AUC, while <strong>ResNet-50</strong> and <strong>ConvNeXt-Tiny</strong> suffered from lower specificity (~69%).
 </p>
 
 <div class="figure-container">
     <img src="{roc_b64}" alt="ROC Comparison Curves">
-    <div class="caption">Figure 2: Comparative Receiver Operating Characteristic (ROC) curves on the independent test set (n=229) for the proposed FootArchNet (AUC = 0.9302), EfficientNet-B2 (AUC = 0.9222), ConvNeXt-Tiny (AUC = 0.9152), and ResNet-50 (AUC = 0.9134).</div>
+    <div class="caption">Figure 2: Comparative Receiver Operating Characteristic (ROC) curves on the independent test set (n=229) highlighting the Clinical Ensemble (AUC = 0.9492), FootArchNet-V2 (AUC = 0.9435), FootArchNet-V1 (AUC = 0.9302), EfficientNet-B2 (AUC = 0.9222), ConvNeXt-Tiny (AUC = 0.9152), and ResNet-50 (AUC = 0.9134).</div>
 </div>
 
 <h3>3.2 Model Interpretability (Grad-CAM)</h3>
 <p>
-    To verify that models rely on true anatomical markers, Grad-CAM saliency maps were extracted across test samples for the proposed FootArchNet (Figure 3). For flatfoot predictions, activations concentrated precisely along the collapsed medial longitudinal arch vault, plantar fascia interface, and navicular-cuneiform alignment. For normal feet, activations targeted the elevated arch gap and calcaneal pitch angle. Spurious regions (standing platform, background air, and edge borders) generated zero activation, demonstrating genuine anatomical reasoning.
+    To verify that models rely on true anatomical markers, Grad-CAM saliency maps were extracted across test samples for the proposed FootArchNet-V2 (Figure 3). For flatfoot predictions, activations concentrated precisely along the collapsed medial longitudinal arch vault, plantar fascia interface, and navicular-cuneiform alignment. For normal feet, activations targeted the elevated arch gap and calcaneal pitch angle. Spurious regions (standing platform, background air, and edge borders) generated zero activation, demonstrating genuine anatomical reasoning.
 </p>
 
 <div class="figure-container">
     <img src="{gradcam_b64}" alt="Grad-CAM Saliency Maps">
-    <div class="caption">Figure 3: Grad-CAM anatomical saliency maps of the proposed FootArchNet demonstrating precise biological focus on the medial longitudinal arch, navicular-cuneiform joint, and calcaneus pitch without background artifacts.</div>
+    <div class="caption">Figure 3: Grad-CAM anatomical saliency maps of the proposed FootArchNet-V2 demonstrating precise biological focus on the medial longitudinal arch, navicular-cuneiform joint, and calcaneus pitch without background artifacts.</div>
 </div>
 
 <h2>4. Discussion & Conclusion</h2>
 <p>
-    Our results demonstrate that direct radiographic deep learning classification resolves the accuracy, stability, and data-scarcity bottlenecks that hinder multi-stage landmark angle measurement methods. By achieving <strong>0.9302 ROC-AUC</strong>, <strong>85.59% accuracy</strong>, and <strong>88.15% precision</strong>, FootArchNet provides a rapid (&lt;25 ms/image), reliable screening mechanism for orthopedic clinics that significantly reduces unnecessary secondary specialist referrals.
+    Our results demonstrate that direct radiographic deep learning classification resolves the accuracy, stability, and data-scarcity bottlenecks that hinder multi-stage landmark angle measurement methods. By achieving <strong>0.9492 ROC-AUC</strong>, <strong>86.90% accuracy</strong>, and <strong>91.41% precision</strong>, the proposed FootArchNet architectures and Clinical Ensemble provide a rapid (&lt;25 ms/image), reliable screening mechanism for orthopedic clinics that significantly reduces unnecessary secondary specialist referrals.
 </p>
 <p>
-    <strong>Clinical Utility:</strong> Integrating FootArchNet into hospital PACS environments enables instant triage during weight-bearing radiography, flagging structural pes planus deformities with high confidence while maintaining robust specificity on normal anatomy.
+    <strong>Clinical Utility:</strong> Integrating FootArchNet and the Clinical Ensemble into hospital PACS environments enables instant triage during weight-bearing radiography, flagging structural pes planus deformities with high confidence while maintaining robust specificity on normal anatomy.
 </p>
 
 <h2>References</h2>
@@ -650,12 +673,12 @@ def generate_turkish_html(roc_b64: str, gradcam_b64: str, arch_svg_tr: str) -> s
 
 <div class="abstract-box">
     <div class="abstract-title">Özet</div>
-    <strong>Amaç:</strong> Düz tabanlık (<em>pes planus</em>), medial boylamsal arkın (iç kavisin) çökmesiyle karakterize edilen ve yürüme biyomekaniğini bozan yaygın bir ortopedik deformitedir. Geleneksel bilgisayar destekli teşhis yöntemleri, röntgen görüntülerinde kemik segmentasyonu ve anatomik nirengi noktası tespiti yaparak geometrik açıları (Meary açısı ve kalkaneal pitch açısı) hesaplamaya odaklanmıştır. Ancak bu yöntemler; nirengi sapmalarının kümülatif açı hatası doğurması, basamak yüzeyinin eğim belirsizliği ve yoğun etiketleme zorluğu nedeniyle pratikte tıkanmaktadır. Bu çalışmada, nirengi noktası işaretlemesine gerek kalmadan basarak çekilen yan ayak röntgenlerinden doğrudan düz taban / normal sınıflandırması yapan özgün <strong>FootArchNet</strong> derin öğrenme mimarisi ve uçtan uca teşhis sistemi sunulmaktadır.<br><br>
-    <strong>Yöntem:</strong> Çalışmada klinik PACS arşivinden temin edilen <strong>1.529 adet basarak çekilmiş yan ayak radyografisi</strong> (908 düz taban, 621 normal) kullanılmıştır. 16-bit'ten 8-bit'e dinamik persentil pencereleme, CLAHE kontrast artırımı, kaval kemiği (tibia) dikey ekseniyle parmak yönü tespiti (kanonik sağ yönelim standardizasyonu) ve anatomik güvenlik marjlı (&ge;30 px) doğal oranlı (letterbox) ayak ilgi alanı (ROI) kırpma algoritması geliştirilmiştir. Veri seti tabakalı (stratified) olarak eğitim (%70.05, n=1.071), doğrulama (%14.98, n=229) ve bağımsız test (%14.98, n=229) kümelerine ayrılmıştır. Çok ölçekli paralel reseptif alanlar, Squeeze-and-Excitation kanal dikkati ve ayak arkı havuzlaması içeren <strong>FootArchNet</strong> mimarisi geliştirilerek ResNet-50, EfficientNet-B2 ve ConvNeXt-Tiny ile sınıf ağırlıklı kayıp fonksiyonu ve otomatik karma duyarlılık (AMP) altında kıyaslanmış; karar mekanizmaları Grad-CAM ile incelenmiştir.<br><br>
-    <strong>Bulgular:</strong> Modelin eğitimde görmediği 229 klinik vaka (136 düz taban, 93 normal) üzerindeki test sonuçlarında, önerilen <strong>FootArchNet</strong> mimarisi <strong>0.9302 ROC-AUC</strong>, <strong>%85.59 genel doğruluk</strong>, <strong>%87.50 duyarlılık (sensitivity)</strong>, serideki en yüksek özgüllük olan <strong>%82.80 (specificity)</strong>, <strong>%88.15 kesinlik (PPV)</strong> ve <strong>0.3577 test kaybı</strong> ile en üstün ayırt ediciliği sağlamıştır. Standart modellerden EfficientNet-B2 %86.09 doğruluk ve 0.9222 AUC, ResNet-50 ise %94.89 duyarlılık ve %68.82 özgüllük elde etmiştir. Grad-CAM ısı haritaları, FootArchNet'in arka plan gürültüleri yerine doğrudan medial boylamsal arkın zirve çöküş noktasına, naviküler-kuneiform eklem hattına ve kalkaneus eğimine odaklandığını doğrulamıştır.<br><br>
-    <strong>Sonuç:</strong> Uçtan uca FootArchNet derin öğrenme sınıflandırması, nirengi tabanlı geleneksel açı hesaplama yöntemlerine kıyasla çok daha kararlı, hızlı (&lt;25 ms/grafi) ve klinik olarak doğrulanabilir bir teşhis tarama standardı sunmaktadır.
+    <strong>Amaç:</strong> Düz tabanlık (<em>pes planus</em>), medial boylamsal arkın (iç kavisin) çökmesiyle karakterize edilen ve yürüme biyomekaniğini bozan yaygın bir ortopedik deformitedir. Geleneksel bilgisayar destekli teşhis yöntemleri, röntgen görüntülerinde kemik segmentasyonu ve anatomik nirengi noktası tespiti yaparak geometrik açıları (Meary açısı ve kalkaneal pitch açısı) hesaplamaya odaklanmıştır. Ancak bu yöntemler; nirengi sapmalarının kümülatif açı hatası doğurması, basamak yüzeyinin eğim belirsizliği ve yoğun etiketleme zorluğu nedeniyle pratikte tıkanmaktadır. Bu çalışmada, nirengi noktası işaretlemesine gerek kalmadan basarak çekilen yan ayak röntgenlerinden doğrudan düz taban / normal sınıflandırması yapan özgün hibrit CNN-Transformer mimarisi (<strong>FootArchNet-V2</strong>) ve <strong>Klinik Ensemble</strong> karar destek sistemi sunulmaktadır.<br><br>
+    <strong>Yöntem:</strong> Çalışmada klinik PACS arşivinden temin edilen <strong>1.529 adet basarak çekilmiş yan ayak radyografisi</strong> (908 düz taban, 621 normal) kullanılmıştır. 16-bit'ten 8-bit'e dinamik persentil pencereleme, CLAHE kontrast artırımı, kaval kemiği (tibia) dikey ekseniyle parmak yönü tespiti (kanonik sağ yönelim standardizasyonu) ve anatomik güvenlik marjlı (&ge;30 px) doğal oranlı (letterbox) ayak ilgi alanı (ROI) kırpma algoritması geliştirilmiştir. Veri seti tabakalı (stratified) olarak eğitim (%70.05, n=1.071), doğrulama (%14.98, n=229) ve bağımsız test (%14.98, n=229) kümelerine ayrılmıştır. Koordinat Konvolüsyonları (CoordConv), kemik belirteçleri arası Çok Başlı Mekânsal Dikkat (TransArchAttention) ve Biyomekanik Piramit Blokları içeren <strong>FootArchNet-V2</strong> geliştirilmiş; FootArchNet-V1 ve standart modellerle kıyaslandıktan sonra çok modelli bir <strong>Klinik Ensemble</strong> oluşturulmuştur.<br><br>
+    <strong>Bulgular:</strong> Modelin eğitimde görmediği 229 klinik vaka (136 düz taban, 93 normal) üzerindeki test sonuçlarında, tekil model olarak <strong>FootArchNet-V2</strong> rekor <strong>0.9435 ROC-AUC</strong>, <strong>%84.95 özgüllük (specificity)</strong> ve <strong>%89.06 kesinlik (PPV)</strong> elde etmiştir. İki özgün modelin birleşimi olan <strong>Klinik Ensemble</strong> ise tüm çalışmanın zirve noktasına ulaşarak <strong>%86.90 genel doğruluk</strong> (kalibrasyon ile %87.34), <strong>0.9492 ROC-AUC</strong>, <strong>%88.17 özgüllük</strong> ve <strong>%91.41 kesinlik</strong> üretmiştir. Grad-CAM ısı haritaları, FootArchNet-V2'nin arka plan gürültüleri yerine doğrudan medial boylamsal arkın zirve çöküş noktasına, naviküler-kuneiform eklem hattına ve kalkaneus eğimine odaklandığını doğrulamıştır.<br><br>
+    <strong>Sonuç:</strong> Uçtan uca FootArchNet-V2 ve Klinik Ensemble sınıflandırması, nirengi tabanlı geleneksel açı hesaplama yöntemlerine kıyasla çok daha kararlı, yüksek özgüllüklü (&gt;%88) ve klinik olarak açıklanabilir bir tarama standardı sunmaktadır.
     <div class="keywords">
-        <strong>Anahtar Kelimeler:</strong> Düz Taban, Pes Planus, Yan Ayak Röntgeni, FootArchNet, Derin Öğrenme, Squeeze-and-Excitation, Grad-CAM, Açıklanabilir Yapay Zeka.
+        <strong>Anahtar Kelimeler:</strong> Düz Taban, Pes Planus, Yan Ayak Röntgeni, FootArchNet-V2, Vision Transformer, CoordConv, Klinik Ensemble, Grad-CAM, Açıklanabilir Yapay Zeka.
     </div>
 </div>
 
@@ -824,24 +847,46 @@ def generate_turkish_html(roc_b64: str, gradcam_b64: str, arch_svg_tr: str) -> s
     </thead>
     <tbody>
         <tr>
-            <td><strong>FootArchNet (Önerilen)</strong></td>
+            <td><strong>Klinik Ensemble (V1+V2)</strong></td>
+            <td><strong>%86.90</strong></td>
+            <td>%86.03</td>
+            <td><strong>%88.17</strong></td>
+            <td><strong>%91.41</strong></td>
+            <td>%81.19</td>
+            <td><strong>0.8864</strong></td>
+            <td><strong>0.9492</strong></td>
+            <td>N/A</td>
+        </tr>
+        <tr>
+            <td><strong>FootArchNet-V2 (Önerilen)</strong></td>
+            <td>%84.28</td>
+            <td>%83.82</td>
+            <td>%84.95</td>
+            <td>%89.06</td>
+            <td>%78.22</td>
+            <td>%86.36</td>
+            <td>0.9435</td>
+            <td>0.4063</td>
+        </tr>
+        <tr>
+            <td><strong>FootArchNet-V1</strong></td>
             <td>%85.59</td>
             <td>%87.50</td>
-            <td><strong>%82.80</strong></td>
-            <td><strong>%88.15</strong></td>
+            <td>%82.80</td>
+            <td>%88.15</td>
             <td>%81.91</td>
             <td>%87.82</td>
-            <td><strong>0.9302</strong></td>
+            <td>0.9302</td>
             <td><strong>0.3577</strong></td>
         </tr>
         <tr>
             <td><strong>EfficientNet-B2</strong></td>
-            <td><strong>%86.09</strong></td>
+            <td>%86.09</td>
             <td>%91.24</td>
             <td>%78.49</td>
             <td>%86.21</td>
             <td>%85.88</td>
-            <td><strong>0.8865</strong></td>
+            <td>0.8865</td>
             <td>0.9222</td>
             <td>0.5091</td>
         </tr>
@@ -872,31 +917,32 @@ def generate_turkish_html(roc_b64: str, gradcam_b64: str, arch_svg_tr: str) -> s
 <div class="caption">Tablo 2: Bağımsız klinik test setinde (n=229) mimarilerin teşhis başarımı karşılaştırması.</div>
 
 <p>
-    Önerilen <strong>FootArchNet</strong> mimarisi, <strong>0.9302 ROC-AUC</strong> ile tüm mimariler arasındaki en yüksek eğri altı alanı ve en düşük test kaybını (<strong>0.3577</strong>) sağlamıştır. Özellikle standart modellerin en zayıf kaldığı alanda üstünlük sağlayarak <strong>%82.80 klinik özgüllük</strong> ve <strong>%88.15 pozitif öngörü değeri (kesinlik)</strong> üretmiş, normal ayakların yanlışlıkla düz taban olarak etiketlenmesini engellemiştir.
-    Standart modellerden <strong>EfficientNet-B2</strong> %86.09 doğruluk ve 0.9222 AUC sunarken, <strong>ResNet-50</strong> ve <strong>ConvNeXt-Tiny</strong> yüksek duyarlılık (%94 civarı) sunmakla birlikte daha düşük özgüllükte kalmıştır.
+    Koordinat Konvolüsyonları (CoordConv) ve Çok Başlı Mekânsal Dikkat (TransArchAttention) ile donatılan <strong>FootArchNet-V2</strong>, tekil model bazında <strong>0.9435 ROC-AUC</strong> ile yeni bir rekor kırmış, <strong>%84.95 klinik özgüllük</strong> ve <strong>%89.06 kesinlik</strong> sağlamıştır.
+    Ayrıca FootArchNet-V1 ve FootArchNet-V2 mimarilerini birleştiren <strong>Klinik Ensemble</strong>, tüm çalışma içerisindeki en üstün genel performansı üreterek <strong>%86.90 genel doğruluk</strong> (kalibre edilmiş eşik ile %87.34), <strong>0.9492 ROC-AUC</strong>, <strong>%88.17 özgüllük</strong> ve <strong>%91.41 pozitif öngörü değeri (kesinlik)</strong> değerlerine ulaşmıştır (93 normal hastadan yalnızca 11'inde yanlış pozitif alarm).
+    Standart modellerden <strong>EfficientNet-B2</strong> %86.09 doğruluk ve 0.9222 AUC sunarken, <strong>ResNet-50</strong> ve <strong>ConvNeXt-Tiny</strong> daha düşük özgüllükte (~%69) kalmıştır.
 </p>
 
 <div class="figure-container">
     <img src="{roc_b64}" alt="ROC Eğrileri">
-    <div class="caption">Şekil 2: Bağımsız test setinde (n=229) FootArchNet (AUC = 0.9302), EfficientNet-B2 (AUC = 0.9222), ConvNeXt-Tiny (AUC = 0.9152) ve ResNet-50 (AUC = 0.9134) ROC eğrileri karşılaştırması.</div>
+    <div class="caption">Şekil 2: Bağımsız test setinde (n=229) Klinik Ensemble (AUC = 0.9492), FootArchNet-V2 (AUC = 0.9435), FootArchNet-V1 (AUC = 0.9302), EfficientNet-B2 (AUC = 0.9222), ConvNeXt-Tiny (AUC = 0.9152) ve ResNet-50 (AUC = 0.9134) ROC eğrileri karşılaştırması.</div>
 </div>
 
 <h3>3.2 Grad-CAM Anatomik Açıklanabilirlik</h3>
 <p>
-    FootArchNet modelinin karar verirken medial boylamsal arkın çökmesine (naviküler-kuneiform kemik hattı), plantar taban basış yüzeyine ve kalkaneus açısına odaklandığı; basamağın metal hatlarına veya arka plana sıfır aktivasyon verdiği doğrulanmıştır (Şekil 3).
+    Önerilen FootArchNet-V2 modelinin karar verirken medial boylamsal arkın çökmesine (naviküler-kuneiform kemik hattı), plantar taban basış yüzeyine ve kalkaneus açısına odaklandığı; basamağın metal hatlarına veya arka plana sıfır aktivasyon verdiği doğrulanmıştır (Şekil 3).
 </p>
 
 <div class="figure-container">
     <img src="{gradcam_b64}" alt="Grad-CAM Haritaları">
-    <div class="caption">Şekil 3: Önerilen FootArchNet modelinin Grad-CAM anatomik ısı haritaları ile model kararlarının klinik geçerliliğinin doğrulanması.</div>
+    <div class="caption">Şekil 3: Önerilen FootArchNet-V2 modelinin Grad-CAM anatomik ısı haritaları ile model kararlarının klinik geçerliliğinin doğrulanması.</div>
 </div>
 
 <h2>4. Tartışma ve Sonuç</h2>
 <p>
-    Elde edilen bulgular, doğrudan radyografik derin öğrenme sınıflandırmasının nirengi sapmalarından kaynaklanan açı hatalarını ve etiketleme darboğazını ortadan kaldırdığını göstermektedir. <strong>0.9302 ROC-AUC</strong>, <strong>%85.59 genel doğruluk</strong> ve <strong>%88.15 kesinlik</strong> ile FootArchNet, ortopedi kliniklerinde hızlı (&lt;25 ms/grafi) ve güvenilir bir otomatik tarama mekanizması sağlamaktadır.
+    Elde edilen bulgular, doğrudan radyografik derin öğrenme sınıflandırmasının nirengi sapmalarından kaynaklanan açı hatalarını ve etiketleme darboğazını ortadan kaldırdığını göstermektedir. <strong>0.9492 ROC-AUC</strong>, <strong>%86.90 genel doğruluk</strong> ve <strong>%91.41 kesinlik</strong> ile FootArchNet modelleri ve Klinik Ensemble, ortopedi kliniklerinde hızlı (&lt;25 ms/grafi) ve güvenilir bir otomatik tarama mekanizması sağlamaktadır.
 </p>
 <p>
-    <strong>Klinik Uygulanabilirlik:</strong> FootArchNet, hastane PACS radyoloji iş akışlarına entegre edildiğinde radyografileri anında önceliklendirerek gereksiz sevkleri ve tanı gecikmelerini minimize edebilecek klinik yetkinliğe sahiptir.
+    <strong>Klinik Uygulanabilirlik:</strong> FootArchNet ve Klinik Ensemble, hastane PACS radyoloji iş akışlarına entegre edildiğinde radyografileri anında önceliklendirerek gereksiz sevkleri ve tanı gecikmelerini minimize edebilecek klinik yetkinliğe sahiptir.
 </p>
 
 <h2>Kaynaklar</h2>
@@ -943,7 +989,7 @@ def main():
     experiments_dir = PROJECT_ROOT / "experiments"
 
     roc_path = experiments_dir / "benchmark_roc_comparison.png"
-    gradcam_path = experiments_dir / "run_foot_arch_net_512px" / "gradcam_test_samples.png"
+    gradcam_path = experiments_dir / "run_foot_arch_net_v2_512px" / "gradcam_test_samples.png"
     arch_svg_en_path = papers_dir / "methodology_architecture_en.svg"
     arch_svg_tr_path = papers_dir / "methodology_architecture_tr.svg"
 

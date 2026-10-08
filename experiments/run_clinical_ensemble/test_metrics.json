@@ -1,0 +1,13 @@
+{
+    "accuracy": 0.869,
+    "sensitivity": 0.8603,
+    "specificity": 0.8817,
+    "precision": 0.9141,
+    "npv": 0.8119,
+    "f1_score": 0.8864,
+    "roc_auc": 0.9492,
+    "tp": 117,
+    "fp": 11,
+    "tn": 82,
+    "fn": 19
+}
