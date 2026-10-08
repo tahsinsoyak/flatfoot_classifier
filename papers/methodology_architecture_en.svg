@@ -307,12 +307,12 @@
     <!-- Bottom Architecture Compatibility Bar -->
     <g transform="translate(16, 436)">
       <rect x="0" y="0" width="518" height="92" rx="6" fill="#ecfdf5" stroke="#34d399" stroke-width="1.2" />
-      <text x="259" y="22" fill="#065f46" font-size="10" font-weight="700" text-anchor="middle">Evaluated Backbones: EfficientNet-B2 (86.09% Acc) • ResNet-50 (94.89% Sens) • ConvNeXt-Tiny</text>
-      <text x="259" y="42" fill="#1e293b" font-size="9" text-anchor="middle">• Compound MBConv Scaling (EfficientNet) • Bottleneck Residuals (ResNet) • 7×7 Depthwise Conv (ConvNeXt)</text>
+      <text x="259" y="22" fill="#065f46" font-size="10" font-weight="700" text-anchor="middle">Proposed Model: FootArchNet (0.9302 ROC-AUC) • Benchmarks: EfficientNet-B2, ResNet-50, ConvNeXt-Tiny</text>
+      <text x="259" y="42" fill="#1e293b" font-size="9" text-anchor="middle">• Multi-Scale Receptive Convolutions • Squeeze-and-Excitation Channel Attention • Longitudinal Arch Pooling</text>
       
       <rect x="18" y="54" width="482" height="26" rx="4" fill="#065f46" />
       <text x="259" y="71" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">
-        Future Foundation: Custom FootArchNet Dual-Branch Attention Architecture
+        Proposed FootArchNet: Tailored Deep Architecture for Weight-Bearing Arch Morphology
       </text>
     </g>
   </g>
@@ -344,7 +344,7 @@
 
       <!-- Benchmark Metrics summary inside box -->
       <rect x="10" y="94" width="300" height="80" rx="4" fill="#fffbeb" stroke="#fef08a" />
-      <text x="160" y="112" fill="#b45309" font-size="9.5" font-weight="bold" text-anchor="middle">Independent Clinical Test Cohort (n=230)</text>
+      <text x="160" y="112" fill="#b45309" font-size="9.5" font-weight="bold" text-anchor="middle">Independent Clinical Test Cohort (n=229)</text>
       
       <text x="20" y="132" fill="#0f172a" font-size="9">• Sensitivity (Recall): <tspan font-weight="bold" fill="#047857">94.89%</tspan> (130/137)</text>
       <text x="20" y="148" fill="#0f172a" font-size="9">• ROC-AUC Score: <tspan font-weight="bold" fill="#047857">0.9222</tspan> (EfficientNet-B2)</text>

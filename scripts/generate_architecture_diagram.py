@@ -57,9 +57,9 @@ def create_architecture_svg(output_path: Path | str, lang: str = "en") -> str:
         h_stg4_t = "Aşama 4: Ark Çökmesi"
         h_stg4_s = "Genel MLA morfolojisi"
 
-        models_badge = "Değerlendirilen Omurgalar: EfficientNet-B2 (%86.09 Doğruluk) • ResNet-50 (%94.89 Duyarlılık) • ConvNeXt-Tiny"
-        models_sub = "• Bileşik MBConv Ölçekleme (EfficientNet) • Rezidüel Artık Bloklar (ResNet) • 7×7 Derinlik Konvolüsyonu"
-        future_badge = "Gelecek Hedefi: Özgün FootArchNet Çift Kollu Dikkat (Attention) Mimarisi"
+        models_badge = "Önerilen Model: FootArchNet (0.9302 ROC-AUC) • Karşılaştırma: EfficientNet-B2, ResNet-50, ConvNeXt"
+        models_sub = "• Çok Ölçekli Reseptif Alan • Squeeze-and-Excitation Dikkati • Boylamsal Ayak Arkı Havuzlama"
+        future_badge = "Özgün FootArchNet: Anatomik Ark Morfolojisine Özelleştirilmiş Derin Ağ Mimarisi"
 
         sec_c_title = "C. KLİNİK TANI VE GRAD-CAM AÇIKLANABİLİRLİK"
         diag_title = "Teşhis Karar Çıktısı"
@@ -68,7 +68,7 @@ def create_architecture_svg(output_path: Path | str, lang: str = "en") -> str:
         c_norm = "Normal Ayak"
         c_norm_sub = "P(y=1) < 0.50 Normal"
 
-        test_cohort = "Bağımsız Klinik Test Kümesi (n=230)"
+        test_cohort = "Bağımsız Klinik Test Kümesi (n=229)"
         sens_lbl = "• Duyarlılık (Sensitivity):"
         auc_lbl = "• ROC-AUC Skoru:"
         acc_lbl = "• Genel Doğruluk (Accuracy):"
@@ -134,9 +134,9 @@ def create_architecture_svg(output_path: Path | str, lang: str = "en") -> str:
         h_stg4_t = "Stage 4: Arch Sag"
         h_stg4_s = "Global MLA collapse"
 
-        models_badge = "Evaluated Backbones: EfficientNet-B2 (86.09% Acc) • ResNet-50 (94.89% Sens) • ConvNeXt-Tiny"
-        models_sub = "• Compound MBConv Scaling (EfficientNet) • Bottleneck Residuals (ResNet) • 7×7 Depthwise Conv (ConvNeXt)"
-        future_badge = "Future Foundation: Custom FootArchNet Dual-Branch Attention Architecture"
+        models_badge = "Proposed Model: FootArchNet (0.9302 ROC-AUC) • Benchmarks: EfficientNet-B2, ResNet-50, ConvNeXt-Tiny"
+        models_sub = "• Multi-Scale Receptive Convolutions • Squeeze-and-Excitation Channel Attention • Longitudinal Arch Pooling"
+        future_badge = "Proposed FootArchNet: Tailored Deep Architecture for Weight-Bearing Arch Morphology"
 
         sec_c_title = "C. DIAGNOSTIC OUTPUT & GRAD-CAM XAI"
         diag_title = "Diagnostic Decision Head"
@@ -145,7 +145,7 @@ def create_architecture_svg(output_path: Path | str, lang: str = "en") -> str:
         c_norm = "Normal Foot"
         c_norm_sub = "P(y=1) < 0.50 Normal"
 
-        test_cohort = "Independent Clinical Test Cohort (n=230)"
+        test_cohort = "Independent Clinical Test Cohort (n=229)"
         sens_lbl = "• Sensitivity (Recall):"
         auc_lbl = "• ROC-AUC Score:"
         acc_lbl = "• Diagnostic Accuracy:"
