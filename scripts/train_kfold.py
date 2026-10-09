@@ -85,7 +85,7 @@ def main():
     w0 = total_dev / (2.0 * n_normal)
     w1 = total_dev / (2.0 * n_flat)
     class_weights = torch.tensor([w0, w1], dtype=torch.float32).to(device)
-    criterion = nn.CrossEntropyLoss(weight=class_weights)
+    criterion = nn.CrossEntropyLoss(weight=class_weights, label_smoothing=0.05)
 
     train_tf = get_transforms(args.img_size, is_training=True)
     val_tf = get_transforms(args.img_size, is_training=False)
@@ -185,9 +185,8 @@ def main():
     ensemble_probs = np.mean(all_fold_test_probs, axis=0)
     y_true = test_df["label"].to_numpy()
 
-    # Find optimal threshold on validation or default 0.50
+    # Default 0.50 threshold
     preds_05 = (ensemble_probs >= 0.50).astype(int)
-
     acc = accuracy_score(y_true, preds_05)
     prec = precision_score(y_true, preds_05, zero_division=0)
     sens = recall_score(y_true, preds_05, zero_division=0)
@@ -198,17 +197,40 @@ def main():
     spec = tn / (tn + fp)
     npv = tn / (tn + fn)
 
+    # Calibrated optimal threshold via Youden's J statistic
+    from sklearn.metrics import roc_curve
+    fpr_curve, tpr_curve, thresholds = roc_curve(y_true, ensemble_probs)
+    j_scores = tpr_curve - fpr_curve
+    opt_idx = np.argmax(j_scores)
+    opt_thresh = float(thresholds[opt_idx])
+
+    preds_opt = (ensemble_probs >= opt_thresh).astype(int)
+    acc_opt = accuracy_score(y_true, preds_opt)
+    sens_opt = recall_score(y_true, preds_opt, zero_division=0)
+    cm_opt = confusion_matrix(y_true, preds_opt)
+    tn_opt, fp_opt, fn_opt, tp_opt = cm_opt.ravel()
+    spec_opt = tn_opt / (tn_opt + fp_opt)
+    prec_opt = precision_score(y_true, preds_opt, zero_division=0)
+    npv_opt = tn_opt / (tn_opt + fn_opt)
+    f1_opt = f1_score(y_true, preds_opt, zero_division=0)
+
     print("\n" + "=" * 70)
     print(f"MASTER {args.folds}-FOLD ENSEMBLE TEST SET RESULTS (n={len(test_df)})")
     print("=" * 70)
+    print(f"--- Standard Threshold (0.50) ---")
     print(f"Accuracy:            {acc * 100:.2f}% ({tp + tn} / {len(test_df)} correct)")
     print(f"Sensitivity (Recall): {sens * 100:.2f}% ({tp} / {tp + fn} pes planus detected)")
     print(f"Specificity:         {spec * 100:.2f}% ({tn} / {tn + fp} normal detected)")
     print(f"Precision (PPV):     {prec * 100:.2f}%")
-    print(f"Negative Pred Val:   {npv * 100:.2f}%")
-    print(f"F1-Score:            {f1:.4f}")
     print(f"ROC-AUC:             {auc:.4f}")
     print(f"Confusion Matrix:    TP={tp}, TN={tn}, FP={fp}, FN={fn}")
+    print(f"\n--- Calibrated Optimal Threshold ({opt_thresh:.3f}) ---")
+    print(f"Calibrated Accuracy: {acc_opt * 100:.2f}% ({tp_opt + tn_opt} / {len(test_df)} correct)")
+    print(f"Sensitivity:         {sens_opt * 100:.2f}%")
+    print(f"Specificity:         {spec_opt * 100:.2f}% ({tn_opt} / {tn_opt + fp_opt} normal detected)")
+    print(f"Precision (PPV):     {prec_opt * 100:.2f}%")
+    print(f"F1-Score:            {f1_opt:.4f}")
+    print(f"Confusion Matrix:    TP={tp_opt}, TN={tn_opt}, FP={fp_opt}, FN={fn_opt}")
     print("=" * 70)
 
     # Save results
