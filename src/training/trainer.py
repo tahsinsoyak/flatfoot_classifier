@@ -186,7 +186,7 @@ class Trainer:
             self.history.append(log_entry)
 
             print(
-                f"Epoch {epoch:02d}/{num_epochs:02d} | "
+                f"Epoch {epoch:02d}/{total_epochs:02d} | "
                 f"Train Loss: {train_loss:.4f} Acc: {train_metrics['accuracy']:.4f} AUC: {train_metrics['roc_auc']:.4f} | "
                 f"Val Loss: {val_loss:.4f} Acc: {val_metrics['accuracy']:.4f} AUC: {val_metrics['roc_auc']:.4f} | "
                 f"Sens: {val_metrics['sensitivity']:.4f} Spec: {val_metrics['specificity']:.4f} | "
